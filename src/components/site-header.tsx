@@ -1,27 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, Code2, Moon, Sun } from "lucide-react";
 
+function getDarkTheme(): boolean {
+  const saved = window.localStorage.getItem("bsis-theme");
+  return saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+function subscribeToTheme(onChange: () => void): () => void {
+  const preference = window.matchMedia("(prefers-color-scheme: dark)");
+  window.addEventListener("storage", onChange);
+  window.addEventListener("bsis-theme-change", onChange);
+  preference.addEventListener("change", onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener("bsis-theme-change", onChange);
+    preference.removeEventListener("change", onChange);
+  };
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
-  const [dark, setDark] = useState(false);
+  const dark = useSyncExternalStore(subscribeToTheme, getDarkTheme, () => false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("bsis-theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = saved === "dark" || (saved !== "light" && prefersDark);
-    document.documentElement.classList.toggle("dark", isDark);
-    setDark(isDark);
-  }, []);
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
 
   function toggleTheme() {
-    const nextDark = !dark;
-    document.documentElement.classList.toggle("dark", nextDark);
-    window.localStorage.setItem("bsis-theme", nextDark ? "dark" : "light");
-    setDark(nextDark);
+    window.localStorage.setItem("bsis-theme", dark ? "light" : "dark");
+    window.dispatchEvent(new Event("bsis-theme-change"));
   }
 
   const isDocs = pathname === "/docs" || pathname.startsWith("/docs/");

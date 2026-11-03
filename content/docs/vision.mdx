@@ -1,0 +1,27 @@
+---
+title: Vision
+description: Why BSIS exists and the problems it wants to solve.
+---
+
+## Build an installer like a website
+
+BSIS stands for **Better NSIS**. The goal is to make installer development expressive and accessible without sacrificing native Windows capabilities.
+
+Rather than forcing developers to express every screen and business rule in a specialized installer scripting language, BSIS aims to let them use familiar programming and UI tools.
+
+## Product principles
+
+- **UI freedom.** Developers should control layouts, branding, forms and navigation.
+- **Native reliability.** Installation, registry changes, services and shortcuts belong in a Windows-focused engine, not unrestricted page scripts.
+- **One installation model.** GUI, console and silent operation should share the same validated plan.
+- **Offline-first.** A fully self-contained installer should be possible without downloading a runtime at setup time.
+- **Composable builds.** Standard steps should work out of the box, with optional plugins for specialized workflows.
+- **Automation-friendly.** Consistent exit codes, structured logs and unattended operation matter as much as visual polish.
+
+## More than setup wizards
+
+The proposed scope includes installers, uninstallers, bootstrappers, updaters and downloaders. Those products share concerns, but may eventually use different runtime profiles and packaging strategies.
+
+## Non-goals for the first prototype
+
+The first milestone does not need an elaborate visual editor, marketplace, OAuth integration, support for every language, or all possible archive formats. Those ideas should follow proof that the installation engine can safely complete and reverse a basic installation.

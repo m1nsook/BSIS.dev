@@ -1,18 +1,25 @@
 ---
 title: BSIS Documentation
-description: Everything you need to get started and work with BSIS.
+description: Better NSIS — a design-first installer framework for Windows.
 ---
 
-Welcome to **BSIS**. Find setup guides, usage examples, and the API reference in one place.
+**BSIS (Better NSIS)** is a new open-source project exploring a developer-friendly way to create Windows 10/11 installers.
 
-## Getting started
+> **Project status: Early design.** There is no released BSIS engine or stable public API yet. The architecture, configuration samples and plugin interfaces on this site are proposals and may change.
 
-New to BSIS? Begin with the [getting started guide](/docs/getting-started) to learn how these docs are organized and where your guides belong.
+## Start here
 
-## API reference
+- [Getting started](./getting-started/) — understand what is available today.
+- [Project vision](./vision/) — why BSIS exists and what it aims to solve.
+- [Architecture](./architecture/) — the proposed native engine and developer tooling.
+- [Roadmap](./roadmap/) — milestones from prototype to first release.
 
-Explore the [API reference](/reference) for endpoint definitions, request parameters, and response examples. The current OpenAPI file contains a placeholder endpoint for demonstration.
+## Core areas
 
-## Writing documentation
+BSIS aims to support installation, uninstallation, bootstrapping, updating and downloading. A single project could offer a fully customized **graphical installer**, an **interactive terminal mode**, and a **silent mode** for deployment automation.
 
-All guides live in `content/docs`. Add an `.mdx` file and update `_meta.json` to choose the sidebar order. You can write regular Markdown, embed links, and include highlighted code examples.
+The long-term goal is for developers to design installer screens using familiar UI technologies while delegating privileged filesystem and Windows operations to a dedicated native engine.
+
+## About this documentation
+
+This site is public and may change frequently as the design evolves. The BSIS engine repository remains private while the framework is under development. All example APIs should be treated as illustrative until a release explicitly documents them as supported.

@@ -1,0 +1,28 @@
+---
+title: Plugins
+description: Proposed extension points for BSIS developers.
+---
+
+> **Design discussion.** No public plugin SDK or extension API is available yet.
+
+## What should be extensible?
+
+BSIS may support plugins for additional build languages, UI components, archive encoders, software prerequisites, Windows integrations and custom installer screens.
+
+A good plugin system should work for a simple single-project installer without requiring a large ecosystem of packages.
+
+## Two kinds of plugins
+
+**Build-time plugins** run while the developer is compiling an installer. They may transform assets, generate manifests or integrate with build tooling.
+
+**Runtime extensions** ship in the installer and run on the target Windows machine. They must use narrowly scoped operations and have a deliberate trust model, particularly if any step can request administrator elevation.
+
+We should not treat these two categories as interchangeable.
+
+## Package ecosystems
+
+TypeScript/JavaScript package workflows are the initial candidates. Python and other languages may be supported through isolated build-time adapters later, subject to repeatable builds and portability.
+
+## First extension milestone
+
+Define one documented interface for a custom installation step and test it in graphical, interactive console and silent modes before designing a marketplace or public plugin registry.

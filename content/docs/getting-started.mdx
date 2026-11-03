@@ -1,28 +1,38 @@
 ---
 title: Getting started
-description: How to add and organize documentation pages.
+description: How to follow BSIS development and navigate this documentation.
 ---
 
-## Create a new page
+## Current availability
 
-Create `content/docs/your-page.mdx`:
+BSIS is in the planning and prototyping stage. **There is no downloadable installer builder, CLI package or stable configuration format yet.** Please do not rely on example names in this documentation as published package names.
 
-```markdown
----
-title: Your page
----
+The public site documents goals, prototypes and proposed interfaces. The framework's source repository is private until the initial release is ready.
 
-## Hello
+## Explore the project
 
-Write documentation in Markdown or MDX.
+1. Read the [vision](../vision/) to understand the intended developer experience.
+2. Review the [architecture](../architecture/) for the current Rust/TypeScript proposal.
+3. See [configuration](../configuration/) for an *illustrative* configuration draft.
+4. Follow the [roadmap](../roadmap/) to distinguish planned work from actual milestones.
+
+## Working on this documentation
+
+The website uses **Next.js, AriaDocs, Tailwind CSS and Bun**. Documentation is authored in MDX in the public BSIS.dev repository.
+
+For a local documentation preview:
+
+```powershell
+bun install --frozen-lockfile
+bun run dev
 ```
 
-Open `/docs/your-page` to view it.
+Open the local address printed by Next.js. To verify a production static export:
 
-## Organize navigation
+```powershell
+bun run lint
+bunx tsc --noEmit
+bun run build
+```
 
-Edit `content/docs/_meta.json` to set the order of sidebar links.
-
-## API documentation
-
-Edit `openapi.yaml` to document your actual endpoints. The example `/health` endpoint is a placeholder.
+The published site is built by GitHub Actions on updates to the main branch. Its URL is expected to be https://m1nsook.github.io/BSIS.dev/ until a custom domain is configured.

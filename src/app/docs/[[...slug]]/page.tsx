@@ -32,19 +32,19 @@ export default async function DocsPage({ params }: Props) {
       </nav>
       <Docs.Layout>
         <Docs.Sidebar>
-        <DocsSidebar items={items} baseHref="/docs" />
+          <DocsSidebar items={items} baseHref="/docs" />
         </Docs.Sidebar>
         <Docs.Content>
-        <Docs.Page>
-          <Docs.Page.Title>{frontmatter.title}</Docs.Page.Title>
-          {frontmatter.description ? (
-            <Docs.Page.Description>{frontmatter.description}</Docs.Page.Description>
-          ) : null}
-          <Docs.Page.Content>{MDX}</Docs.Page.Content>
-        </Docs.Page>
+          <Docs.Page>
+            <Docs.Page.Title>{frontmatter.title}</Docs.Page.Title>
+            {frontmatter.description ? (
+              <Docs.Page.Description>{frontmatter.description}</Docs.Page.Description>
+            ) : null}
+            <Docs.Page.Content>{MDX}</Docs.Page.Content>
+          </Docs.Page>
         </Docs.Content>
         <Docs.Aside>
-        <Docs.Toc items={toc} />
+          <Docs.Toc items={toc} />
         </Docs.Aside>
       </Docs.Layout>
     </div>
@@ -53,5 +53,6 @@ export default async function DocsPage({ params }: Props) {
 
 export async function generateStaticParams() {
   const paths = await docs.getPagePaths();
+  // AriaDocs returns "/" for index.mdx; the optional catch-all needs [].
   return paths.map((path) => ({ slug: path.split("/").filter(Boolean) }));
 }

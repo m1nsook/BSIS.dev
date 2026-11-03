@@ -1,4 +1,38 @@
 [
-  { "slug": "index", "title": "Overview" },
-  { "slug": "getting-started", "title": "Getting started" }
+  {
+    "slug": "index",
+    "title": "Overview"
+  },
+  {
+    "slug": "getting-started",
+    "title": "Getting started"
+  },
+  {
+    "slug": "vision",
+    "title": "Vision"
+  },
+  {
+    "slug": "architecture",
+    "title": "Architecture"
+  },
+  {
+    "slug": "configuration",
+    "title": "Configuration"
+  },
+  {
+    "slug": "installer-ui",
+    "title": "Installer UI"
+  },
+  {
+    "slug": "packaging",
+    "title": "Packaging"
+  },
+  {
+    "slug": "plugins",
+    "title": "Plugins"
+  },
+  {
+    "slug": "roadmap",
+    "title": "Roadmap"
+  }
 ]

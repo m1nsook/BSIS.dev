@@ -95,12 +95,18 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
+    let disposed = false
     api.on("reInit", onSelect)
     api.on("select", onSelect)
+    // Run the first snapshot outside the synchronous effect body.
+    queueMicrotask(() => {
+      if (!disposed) onSelect(api)
+    })
 
     return () => {
-      api?.off("select", onSelect)
+      disposed = true
+      api.off("reInit", onSelect)
+      api.off("select", onSelect)
     }
   }, [api, onSelect])
 

@@ -1,0 +1,38 @@
+---
+title: Architecture
+description: Proposed technology choices and system boundaries.
+---
+
+> **Proposal, not a finalized technical decision.** Architecture discussions are ongoing, and implementation details can change after testing.
+
+## Candidate stack
+
+| Area | Leading candidate | Rationale |
+| --- | --- | --- |
+| Native Windows installer engine | Rust | Small native runtime, OS integration and memory safety |
+| Developer configuration and plugins | TypeScript | Strong editor support and familiar workflows |
+| Build tooling | Bun | Fast local tooling and automation |
+| Graphical installer UI | WebView2 with web UI assets | Custom HTML/CSS and framework-based experiences |
+| Optional interactive console | Rust terminal UI | Reuse installation actions without a graphical session |
+| Documentation | Next.js + AriaDocs | MDX guides and static GitHub Pages deployment |
+
+C# and Go remain viable alternatives for portions of the system. A Rust prototype should validate Windows services, UAC behavior, packaging, installer registration and executable size before committing to it as the permanent engine.
+
+## Separation of responsibilities
+
+1. **Developer project:** manifests, UI source, assets and declared plugins.
+2. **Build tool:** validates configuration, compiles UI, resolves resources and creates a release artifact.
+3. **Installer runtime:** verifies the payload, displays the UI or console and coordinates steps.
+4. **Privileged installation core:** performs narrowly defined, auditable Windows operations.
+
+GUI code should request actions through a validated engine API instead of directly running arbitrary administrator-level shell commands.
+
+## Shared execution plan
+
+GUI, console and silent installs should consume the same resolved installation plan. They may present different controls, but must agree on prerequisites, selected components, progress events, errors and exit status.
+
+## Windows runtime considerations
+
+A WebView2-based interface needs a deliberate policy for systems without the runtime. Offline installers cannot assume a network download is possible. The first prototype should measure the cost of bundling the runtime or choosing a fallback presentation.
+
+Packaging, payload verification and rollback should not be tightly coupled to the UI framework.

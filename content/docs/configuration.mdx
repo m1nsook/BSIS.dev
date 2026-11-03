@@ -1,0 +1,46 @@
+---
+title: Configuration
+description: Ideas for a typed BSIS project configuration.
+---
+
+> **Draft API.** The following sample does not represent a published BSIS package, an implemented builder or a frozen schema.
+
+## A typed project file
+
+A TypeScript entry point such as `bsis.config.ts` is one promising direction. It could offer autocomplete, composition and reusable build settings.
+
+```typescript
+// Illustrative only — not currently runnable.
+import { defineConfig } from "@bsis/core";
+
+export default defineConfig({
+  app: {
+    name: "Example App",
+    version: "1.0.0",
+    publisher: "Example Studio",
+  },
+  installer: {
+    ui: "./installer-ui",
+    scope: "user",
+    compression: "balanced",
+  },
+  files: [{ from: "./dist", to: "{installDir}" }],
+  steps: ["welcome", "destination", "install", "finish"],
+});
+```
+
+## Why consider TypeScript?
+
+Typed configuration could provide compile-time feedback, editor hints and modular plugins. The build tool could resolve that configuration into a small, versioned internal manifest before distributing any executable.
+
+**Plain JSON may still be supported.** A declarative format is useful for external tools, CI/CD integrations and users who do not want to execute configuration code.
+
+## What needs to be designed
+
+- A stable schema with versioning and forward-compatibility rules.
+- Explicit install scopes, destination path rules and component selection.
+- A clear distinction between build-time code and runtime actions.
+- Safe handling of secrets and signing keys: never embed build secrets in published installers.
+- Compatibility between installation, repair, update and uninstall metadata.
+
+Any real API will be documented here only after it is implemented and tested.
