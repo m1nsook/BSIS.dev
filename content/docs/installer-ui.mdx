@@ -1,0 +1,32 @@
+---
+title: Installer UI
+description: Plans for graphical, console and silent installation experiences.
+---
+
+## Design-first installation
+
+The intended experience is closer to developing a website than writing a traditional installer wizard. Developers should be able to use HTML/CSS and potentially Svelte or React for screen layouts, branding and interactive forms.
+
+The renderer is still under evaluation. **WebView2 is a candidate**, not a dependency developers are currently required to install.
+
+## One engine, three interfaces
+
+| Interface | Purpose |
+| --- | --- |
+| Graphical | Rich custom wizard screens and progress |
+| Interactive console | Keyboard-driven installation in terminals or remote sessions |
+| Silent | Repeatable automation without user prompts |
+
+All modes should work from the same validated installation plan. For example, a component selected in the GUI should have a matching configurable option in console and silent modes.
+
+## Candidate built-in screens
+
+Welcome, license, destination, component selection, progress, failure and finish are good defaults. A developer should be free to replace them with custom UI components rather than rewrite Windows installation operations.
+
+## Security boundary
+
+The UI is untrusted presentation code relative to privileged system operations. Sensitive operations should be exposed through purpose-built commands with strict arguments, path validation and explicit permission requirements.
+
+## Prototype target
+
+The earliest graphical prototype only needs to install one application from an embedded payload, provide visible progress, and offer a working uninstall path.

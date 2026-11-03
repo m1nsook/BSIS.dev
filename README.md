@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BSIS.dev
 
-## Getting Started
+Public documentation for **BSIS (Better NSIS)**, an early-stage Windows installer framework project.
 
-First, run the development server:
+This repository contains the **documentation website only**. The BSIS engine is private while development is in progress. Documentation examples describe design ideas unless explicitly marked as implemented.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+- Next.js 16 (App Router), React 19 and TypeScript
+- AriaDocs (MDX and OpenAPI reference scaffold)
+- Tailwind CSS 4 and shadcn/ui
+- Bun
+- Static export to GitHub Pages
+
+## Local development
+
+```powershell
+bun install --frozen-lockfile
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit the address printed in the terminal.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verify the production build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+bun run lint
+bunx tsc --noEmit
+bun run build
+```
 
-## Learn More
+The static site is emitted into `out/`. Local builds have no base path.
 
-To learn more about Next.js, take a look at the following resources:
+GitHub Pages builds set `NEXT_PUBLIC_BASE_PATH=/BSIS.dev`, since the repository is deployed as a project site at `https://m1nsook.github.io/BSIS.dev/`. Next.js uses this path for its router and static assets.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Publishing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The `.github/workflows/pages.yml` workflow validates pull requests and deploys successful `main` builds using GitHub Actions. In repository **Settings → Pages**, set the source to **GitHub Actions**. Do not use a `gh-pages` branch.
 
-## Deploy on Vercel
+If a custom domain is introduced, adjust the workflow base path and the GitHub Pages custom-domain settings together.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Editing guides
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Add or modify MDX pages under `content/docs/` and update `content/docs/_meta.json` to set sidebar order. Relative internal links work with both local development and GitHub Pages project paths.
+
+The `openapi.yaml` file and `/reference` section are currently **examples only**, not a public BSIS service API.
+
+Please keep planned features explicitly marked as proposals until supported by a tested release.

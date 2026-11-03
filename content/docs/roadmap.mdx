@@ -1,0 +1,41 @@
+---
+title: Roadmap
+description: The proposed path from design exploration to the first BSIS release.
+---
+
+## Project status
+
+**Early design.** This roadmap describes intended work; it does not imply completion or a delivery date.
+
+## Foundation
+
+- [ ] Choose and document a native runtime prototype.
+- [ ] Design a minimal versioned internal installation manifest.
+- [ ] Produce a standalone Windows Setup.exe that installs one test application.
+- [ ] Support destination selection and reliable uninstall.
+- [ ] Verify payload integrity and basic failure recovery.
+
+## Developer experience
+
+- [ ] Prototype a typed configuration file and validation errors.
+- [ ] Compile a simple custom GUI screen into an installer.
+- [ ] Add a small set of built-in steps and event hooks.
+- [ ] Support unattended installation and useful exit codes.
+- [ ] Validate a basic console presentation of the same installation plan.
+
+## Packaging and Windows
+
+- [ ] Compare LZMA2, Zstandard and LZ4 on representative payloads.
+- [ ] Decide how offline WebView2 requirements are handled.
+- [ ] Add safe shortcuts, installation registration and UAC integration.
+- [ ] Design signing and reproducible build workflows.
+
+## Before the first public release
+
+- [ ] Publish the supported configuration reference and CLI guide.
+- [ ] Provide end-to-end Windows installation tests.
+- [ ] Security-review path handling, elevated operations and extensions.
+- [ ] Publish example projects and compatibility notes.
+- [ ] Open the BSIS engine repository when it is ready for community use.
+
+Features and order may change based on prototype findings.

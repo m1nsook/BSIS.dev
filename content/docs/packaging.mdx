@@ -1,0 +1,32 @@
+---
+title: Packaging
+description: Compression, payload integrity and standalone setup executables.
+---
+
+## Portable payloads
+
+A BSIS installer should eventually be able to contain its own installer runtime, resources, UI assets and application payload in a standalone Windows executable.
+
+The packaging module should be independent of both graphical and console presentation, allowing the same archive strategy to support install, uninstall and future update operations.
+
+## Candidate compression strategies
+
+| Preset | Candidate algorithm | Design priority |
+| --- | --- | --- |
+| Maximum | LZMA2 / 7z | Smaller payloads at the cost of CPU or memory |
+| Balanced | Zstandard | Good compression with fast extraction |
+| Fast | LZ4 | Extraction throughput |
+
+These are *candidate presets*, not implemented command options. Compression effectiveness depends on input data; executables already compressed by another format may offer little additional benefit.
+
+Rust libraries worth evaluating include `sevenz-rust2`, `zstd`, `lz4_flex` and `zip`. Library compatibility, licensing, maintenance and memory usage must be evaluated before selection.
+
+## Integrity and extraction safety
+
+A secure installer should verify package metadata and file hashes, reject unsafe destination traversal and symlink escapes, avoid overwriting files outside approved installation roots, and handle interrupted or failed writes.
+
+The format also needs a predictable manifest version and a reliable policy for rollback and uninstall. **Code signing** proves publisher identity and must be designed separately from payload checksums.
+
+## Offline policy
+
+A self-contained mode should not require installing Bun, Node.js, Rust or external archive programs on the target machine. GUI runtime requirements need separate evaluation.
