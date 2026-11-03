@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: BSIS API (Example)
+  version: 0.1.0
+  description: Example schema for initial documentation setup. Replace it with the real API specification.
+servers:
+  - url: https://api.example.com
+tags:
+  - name: System
+    description: Example system endpoints
+paths:
+  /health:
+    get:
+      tags:
+        - System
+      operationId: get-health
+      summary: Check API health
+      description: Returns a basic health status.
+      responses:
+        "200":
+          description: Health status
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    example: ok
