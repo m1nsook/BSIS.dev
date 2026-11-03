@@ -1,0 +1,92 @@
+# Neko uses Bun. Keep this configuration on the default branch.
+# Version updates are scheduled; security alerts require enabling GitHub's
+# Dependency graph, Dependabot alerts and Dependabot security updates in Settings.
+version: 2
+updates:
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      timezone: "Asia/Seoul"
+    open-pull-requests-limit: 5
+    labels:
+      - "type:maintenance"
+      - "area:github"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      nextjs:
+        applies-to: "version-updates"
+        patterns:
+          - "next"
+          - "eslint-config-next"
+        update-types:
+          - "minor"
+          - "patch"
+      react:
+        applies-to: "version-updates"
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+        update-types:
+          - "minor"
+          - "patch"
+      ui:
+        applies-to: "version-updates"
+        patterns:
+          - "shadcn"
+          - "@shadcn/*"
+          - "radix-ui"
+          - "@radix-ui/*"
+          - "@base-ui/*"
+          - "lucide-react"
+          - "@icons-pack/*"
+          - "next-themes"
+          - "framer-motion"
+        update-types:
+          - "minor"
+          - "patch"
+      tooling:
+        applies-to: "version-updates"
+        patterns:
+          - "typescript"
+          - "eslint"
+          - "@tailwindcss/*"
+          - "tailwindcss"
+          - "@types/*"
+          - "@types/bun"
+        update-types:
+          - "minor"
+          - "patch"
+      other-nonbreaking:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "Europe/Warsaw"
+    open-pull-requests-limit: 3
+    labels:
+      - "type:maintenance"
+      - "area:github"
+    commit-message:
+      prefix: "ci"
+    groups:
+      action-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
