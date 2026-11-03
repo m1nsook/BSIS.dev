@@ -42,7 +42,7 @@ export default function Home() {
       <section className="mt-20 border-t border-border pt-10" aria-labelledby="explore-heading">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 id="explore-heading" className="text-2xl font-semibold tracking-tight">What we're exploring</h2>
+            <h2 id="explore-heading" className="text-2xl font-semibold tracking-tight">What we&apos;re exploring</h2>
             <p className="mt-2 text-sm text-muted-foreground">These are project goals, not shipped functionality.</p>
           </div>
           <Link href="/docs/roadmap" className="inline-flex items-center gap-1.5 text-sm font-medium underline underline-offset-4">
