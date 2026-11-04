@@ -1,6 +1,6 @@
 ---
 title: CLI reference
-description: The implemented build, inspect, install and uninstall commands in BSIS v0.1.0.
+description: Implemented build, inspect, install, verify and uninstall commands in the BSIS prototype.
 ---
 
 <Callout type="warning" title="Experimental CLI">
@@ -18,6 +18,7 @@ BSIS uses one Rust executable as both a developer build tool (before packaging) 
 | `gui` | Launch the experimental offline HTML/CSS wizard | Packaged setup on Windows with WebView2 |
 | `install` | Install to a new destination | Packaged setup |
 | `uninstall` | Remove only verified, tracked installed files | Installed Uninstall.exe or packaged setup |
+| `verify` | Audit receipt and file hashes without modifying anything | Setup.exe, installed Uninstall.exe, or builder |
 
 ## Build
 
@@ -79,6 +80,19 @@ The `--yes` option skips confirmation. It does **not** mean that updates, unatte
 This command launches a bundled offline HTML/CSS wizard. Enter a new or empty folder and select **Install now**. The GUI calls the same validated Rust installation function as console mode and displays the result. **No-argument Setup.exe still starts console mode.**
 
 This command is **not available on Linux** and does not bundle the WebView2 Runtime. The installed `Uninstall.exe` does not contain a package payload and cannot open the installer GUI. See [Installer UI](./installer-ui/) for the requirements, supported interactions and missing features.
+
+## Verify installed files
+
+Inspect the receipt and all tracked files (including managed Uninstall.exe) without deleting or repairing anything:
+
+~~~powershell title="PowerShell"
+.\BSIS-Hello-Setup.exe verify --target "$env:LOCALAPPDATA\Programs\bsis.hello"
+.\BSIS-Hello-Setup.exe verify --target "$env:LOCALAPPDATA\Programs\bsis.hello" --json
+~~~
+
+The required `--target` is the absolute installation folder. Optional `--json` prints structured results with `product`, `location`, `expected_files`, `verified_files` and an array of `issues`. Missing, modified, unreadable and unsafe tracked files are reported together. Verification exits nonzero if drift is found, or if the receipt is missing or invalid.
+
+See [Verify installations](./verification/) for details and limitations.
 
 ## Uninstall
 
