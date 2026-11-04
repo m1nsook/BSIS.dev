@@ -1,32 +1,40 @@
 ---
 title: Packaging
-description: Compression, payload integrity and standalone setup executables.
+description: Current Zstandard payload format, integrity checks and planned compression options.
 ---
 
-## Portable payloads
+## Implemented: Zstandard prototype
 
-A BSIS installer should eventually be able to contain its own installer runtime, resources, UI assets and application payload in a standalone Windows executable.
+The BSIS builder currently produces a standalone Windows setup executable by **appending a Zstandard-compressed payload** to a compiled Rust Windows PE runtime.
 
-The packaging module should be independent of both graphical and console presentation, allowing the same archive strategy to support install, uninstall and future update operations.
+~~~text
+Setup.exe
+├── Rust Windows PE executable
+├── Zstandard stream
+│   ├── Payload magic + manifest length
+│   ├── Versioned JSON package manifest
+│   └── Sequential file contents
+└── Footer: magic + offset + compressed length + SHA-256
+~~~
 
-## Candidate compression strategies
+The manifest tracks each file's relative path, byte size and SHA-256 checksum. Before extracting, the runtime checks the compressed package digest. Each extracted file is then hashed as it is written.
 
-| Preset | Candidate algorithm | Design priority |
+The format is provisional, with no published compatibility guarantee.
+
+## Installation safety
+
+The prototype rejects relative path traversal, invalid Windows file names and unsupported source links/reparse points. Extraction takes place in a fresh staging directory, followed by a rename into a new installation target. Existing installation targets are rejected.
+
+Uninstall uses a receipt and refuses to delete modified tracked files. This is a safeguard against accidental data loss, not a complete threat model for adversarial concurrent filesystem changes.
+
+## Future compression presets
+
+| Possible preset | Algorithm | Status |
 | --- | --- | --- |
-| Maximum | LZMA2 / 7z | Smaller payloads at the cost of CPU or memory |
-| Balanced | Zstandard | Good compression with fast extraction |
-| Fast | LZ4 | Extraction throughput |
+| Maximum | LZMA2 | Planned, not implemented |
+| Balanced | Zstandard | Current fixed prototype encoder |
+| Fast | LZ4 | Planned, not implemented |
 
-These are *candidate presets*, not implemented command options. Compression effectiveness depends on input data; executables already compressed by another format may offer little additional benefit.
+## Trust and code signing
 
-Rust libraries worth evaluating include `sevenz-rust2`, `zstd`, `lz4_flex` and `zip`. Library compatibility, licensing, maintenance and memory usage must be evaluated before selection.
-
-## Integrity and extraction safety
-
-A secure installer should verify package metadata and file hashes, reject unsafe destination traversal and symlink escapes, avoid overwriting files outside approved installation roots, and handle interrupted or failed writes.
-
-The format also needs a predictable manifest version and a reliable policy for rollback and uninstall. **Code signing** proves publisher identity and must be designed separately from payload checksums.
-
-## Offline policy
-
-A self-contained mode should not require installing Bun, Node.js, Rust or external archive programs on the target machine. GUI runtime requirements need separate evaluation.
+A checksum is **not a digital signature**. Authenticode signing and verification, public release packaging, safe elevation and additional Windows attack-surface testing are still needed before using BSIS for production software.

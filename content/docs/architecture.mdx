@@ -1,38 +1,28 @@
 ---
 title: Architecture
-description: Proposed technology choices and system boundaries.
+description: Implemented Rust core and future system boundaries.
 ---
 
-> **Proposal, not a finalized technical decision.** Architecture discussions are ongoing, and implementation details can change after testing.
+> **In development.** The current runtime is deliberately small. The final developer API and GUI architecture are not decided yet.
 
-## Candidate stack
+## Existing Rust workspace
 
-| Area | Leading candidate | Rationale |
+| Component | Technology | Scope |
 | --- | --- | --- |
-| Native Windows installer engine | Rust | Small native runtime, OS integration and memory safety |
-| Developer configuration and plugins | TypeScript | Strong editor support and familiar workflows |
-| Build tooling | Bun | Fast local tooling and automation |
-| Graphical installer UI | WebView2 with web UI assets | Custom HTML/CSS and framework-based experiences |
-| Optional interactive console | Rust terminal UI | Reuse installation actions without a graphical session |
-| Documentation | Next.js + AriaDocs | MDX guides and static GitHub Pages deployment |
+| **bsis-core** | Rust | Manifest validation, paths, Zstandard bundle, installation and uninstall |
+| **bsis** | Rust / Clap | Build CLI, bundle inspection, console install/uninstall |
+| **BSIS.dev** | Next.js + AriaDocs | Public guides and GitHub Pages deployment |
 
-C# and Go remain viable alternatives for portions of the system. A Rust prototype should validate Windows services, UAC behavior, packaging, installer registration and executable size before committing to it as the permanent engine.
+The prototype uses a validated, versioned internal manifest. Files are hashed and streamed into a compressed executable overlay. The native setup runtime extracts them into a fresh staging directory and commits a new install by renaming the directory.
 
-## Separation of responsibilities
+## Future architecture
 
-1. **Developer project:** manifests, UI source, assets and declared plugins.
-2. **Build tool:** validates configuration, compiles UI, resolves resources and creates a release artifact.
-3. **Installer runtime:** verifies the payload, displays the UI or console and coordinates steps.
-4. **Privileged installation core:** performs narrowly defined, auditable Windows operations.
+TypeScript developer configuration, a WebView2-backed GUI with Svelte/React components, interactive terminal UI, a shared installer-step protocol and a security-scoped plugin interface are all **proposals**.
 
-GUI code should request actions through a validated engine API instead of directly running arbitrary administrator-level shell commands.
+We expect GUI, console and silent installation paths to share one validated action model. The UI should not run privileged Windows operations directly.
 
-## Shared execution plan
+## Known limitations
 
-GUI, console and silent installs should consume the same resolved installation plan. They may present different controls, but must agree on prerequisites, selected components, progress events, errors and exit status.
+There is no existing-directory update path, Windows application registration, packaged uninstall executable, UAC, registry API, Windows services, signature verification or final archive compatibility contract yet. These require additional design and security work.
 
-## Windows runtime considerations
-
-A WebView2-based interface needs a deliberate policy for systems without the runtime. Offline installers cannot assume a network download is possible. The first prototype should measure the cost of bundling the runtime or choosing a fallback presentation.
-
-Packaging, payload verification and rollback should not be tightly coupled to the UI framework.
+See [Rust prototype](./prototype/) and [Packaging](./packaging/) for details of what actually exists.

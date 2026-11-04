@@ -1,38 +1,31 @@
 ---
 title: Getting started
-description: How to follow BSIS development and navigate this documentation.
+description: What is available today and how to explore BSIS.
 ---
 
-## Current availability
+## Public availability
 
-BSIS is in the planning and prototyping stage. **There is no downloadable installer builder, CLI package or stable configuration format yet.** Please do not rely on example names in this documentation as published package names.
+BSIS core is a **private, experimental Rust repository**, not a published CLI or library yet. There is no public binary release.
 
-The public site documents goals, prototypes and proposed interfaces. The framework's source repository is private until the initial release is ready.
+The first source prototype is documented in the [Rust prototype guide](./prototype/), including build, install and uninstall commands for maintainers with access to the private repository.
 
-## Explore the project
+For the longer-term vision, see [architecture](./architecture/), [configuration](./configuration/), and [roadmap](./roadmap/).
 
-1. Read the [vision](../vision/) to understand the intended developer experience.
-2. Review the [architecture](../architecture/) for the current Rust/TypeScript proposal.
-3. See [configuration](../configuration/) for an *illustrative* configuration draft.
-4. Follow the [roadmap](../roadmap/) to distinguish planned work from actual milestones.
+## Working on BSIS.dev
 
-## Working on this documentation
+The documentation site uses Next.js 16, AriaDocs, Tailwind CSS 4 and Bun.
 
-The website uses **Next.js, AriaDocs, Tailwind CSS and Bun**. Documentation is authored in MDX in the public BSIS.dev repository.
-
-For a local documentation preview:
-
-```powershell
+~~~powershell
 bun install --frozen-lockfile
 bun run dev
-```
+~~~
 
-Open the local address printed by Next.js. To verify a production static export:
+To check changes before opening a pull request:
 
-```powershell
+~~~powershell
 bun run lint
 bunx tsc --noEmit
 bun run build
-```
+~~~
 
-The published site is built by GitHub Actions on updates to the main branch. Its URL is expected to be https://m1nsook.github.io/BSIS.dev/ until a custom domain is configured.
+The site automatically deploys from the public BSIS.dev main branch using GitHub Actions. The current address is https://m1nsook.github.io/BSIS.dev/.

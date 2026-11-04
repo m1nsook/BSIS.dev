@@ -1,25 +1,23 @@
 ---
 title: BSIS Documentation
-description: Better NSIS — a design-first installer framework for Windows.
+description: Better NSIS — a design-first Windows installer framework.
 ---
 
-**BSIS (Better NSIS)** is a new open-source project exploring a developer-friendly way to create Windows 10/11 installers.
+**BSIS (Better NSIS)** is an early-stage open-source project for building customizable Windows installers.
 
-> **Project status: Early design.** There is no released BSIS engine or stable public API yet. The architecture, configuration samples and plugin interfaces on this site are proposals and may change.
+> **Current status: Experimental Rust prototype.** The core source repository remains private. No public installer builder, supported SDK or production release exists yet.
 
-## Start here
+## What exists today
 
-- [Getting started](./getting-started/) — understand what is available today.
-- [Project vision](./vision/) — why BSIS exists and what it aims to solve.
-- [Architecture](./architecture/) — the proposed native engine and developer tooling.
-- [Roadmap](./roadmap/) — milestones from prototype to first release.
+A first Rust proof of concept supports JSON-defined file payloads, a standalone Windows Setup.exe with **Zstandard-compressed files**, a console installer, SHA-256 verification and a cautious receipt-based uninstall. These features remain experimental.
 
-## Core areas
+- [Rust prototype](./prototype/) — Windows build and test commands.
+- [Configuration](./configuration/) — the actual version 1 JSON schema.
+- [Packaging](./packaging/) — the provisional embedded archive format.
+- [Roadmap](./roadmap/) — what is implemented and what comes next.
 
-BSIS aims to support installation, uninstallation, bootstrapping, updating and downloading. A single project could offer a fully customized **graphical installer**, an **interactive terminal mode**, and a **silent mode** for deployment automation.
+## The long-term vision
 
-The long-term goal is for developers to design installer screens using familiar UI technologies while delegating privileged filesystem and Windows operations to a dedicated native engine.
+BSIS aims to make installer development feel like building a website. Custom graphical interfaces, a TypeScript authoring API, multiple compression algorithms, a plugin ecosystem, a full Windows integration layer, and production-ready updater/repair workflows remain **planned features**.
 
-## About this documentation
-
-This site is public and may change frequently as the design evolves. The BSIS engine repository remains private while the framework is under development. All example APIs should be treated as illustrative until a release explicitly documents them as supported.
+Public documentation will continue to evolve while the engine stays private through development.
