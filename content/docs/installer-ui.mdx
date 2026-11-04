@@ -27,6 +27,16 @@ Choose a **new or existing empty directory**, then select **Install now**. A non
 
 Running Setup.exe **without arguments still opens console mode** in this prototype. The GUI does not yet open by default.
 
+## Cancelling an installation safely
+
+Once you select **Install now**, the **Cancel installation** button remains available while the Rust installer is working. It sends a limited cancellation message to the native host rather than killing the process.
+
+Cancellation is cooperative: Rust checks for it between verified files and immediately before committing the staged directory. If the request is acknowledged before commit, **temporary installation files are discarded** and no target application is installed. A pre-existing empty destination stays empty.
+
+If one very large file is currently being unpacked, the cancellation request may be acknowledged only after that file finishes verification. This first implementation does not stop an individual file in the middle of decompression, nor does it support resuming.
+
+**Important:** Once the staged installation has been committed, cancellation cannot undo the completed application installation. Use the native uninstaller for removal after success.
+
 ## WebView2 developer tools
 
 Normal GUI mode disables right-click context menus, Inspect Element, browser accelerator shortcuts and Print. These are development tools, not options regular installer users need to see.
@@ -51,12 +61,13 @@ If WebView2 is missing, the \`gui\` command reports an error. The **console inst
 
 ## Rust-to-UI boundary
 
-The HTML screen cannot ask the Rust core to execute an arbitrary command. The prototype only recognizes two typed IPC actions:
+The HTML screen cannot ask the Rust core to execute an arbitrary command. The prototype recognizes three narrowly typed IPC actions:
 
 | Action | Result |
 | --- | --- |
 | \`install\` | Pass a destination to the same validated Rust installation engine |
 | \`close\` | Close the window, unless installation is in progress |
+| `cancel` | Request cooperative cancellation while staging/extracting, with rollback before commit |
 
 Installation runs on a worker thread so the UI remains responsive. **Native progress events** are sent from the core to the window's event loop for safe rendering as a progress bar and text status. The UI receives event data but cannot invoke arbitrary Rust commands. Errors or final results are returned to the main UI thread and displayed as text, not injected HTML.
 
@@ -68,7 +79,7 @@ The following are **not yet implemented**:
 
 - Svelte/React project-provided installer screens and reusable UI components.
 - A shared step engine for welcome, license, components, progress and success.
-- Chunk-level progress, cancellation, resumable installation and general-purpose rollback (verified-file progress events now exist).
+- Chunk-level cancellation, resumable installation and general-purpose rollback after commit (cooperative pre-commit cancellation now exists).
 - Native directory picker and richer accessibility testing.
 - Automatic GUI-on-double-click and a documented fallback for missing WebView2.
 - A **Windows-registered** uninstaller and Apps & Features entry (an unregistered installed Uninstall.exe now exists).

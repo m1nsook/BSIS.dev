@@ -14,7 +14,7 @@ description: Implemented Rust core and future system boundaries.
 | **bsis GUI (opt-in)** | Rust / Tao / Wry / WebView2 | Fixed offline HTML/CSS wizard calling the same core install operation |
 | **BSIS.dev** | Next.js + AriaDocs | Public guides and GitHub Pages deployment |
 
-The prototype uses a validated, versioned internal manifest. Native file-level progress callbacks now report verified file and byte counts to the opt-in WebView2 installer. Files are hashed and streamed into a compressed executable overlay. The native setup runtime extracts them into a fresh staging directory and commits a new install by renaming the directory.
+The prototype uses a validated, versioned internal manifest. Native file-level progress callbacks report verified file and byte counts to the opt-in WebView2 installer. Fallible callbacks enable cooperative cancellation before committing staged files; the native event loop remains responsible for routing progress and cancellation safely. Files are hashed and streamed into a compressed executable overlay. The native setup runtime extracts them into a fresh staging directory and commits a new install by renaming the directory.
 
 ## Future architecture
 
