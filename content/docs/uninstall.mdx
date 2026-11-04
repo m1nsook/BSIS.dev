@@ -38,7 +38,11 @@ A checksum detects changes; it does **not** prove who published the executable.
 
 ## Removing a running uninstaller on Windows
 
-Windows may not allow an executable to delete itself while it is running. The prototype uses a best-effort second step: it starts the built-in Windows PowerShell executable from the fixed System32 path, waits for the Rust uninstaller process to exit, then attempts to delete Uninstall.exe and the **empty** installation directory.
+Windows cannot reliably delete a running executable. An early BSIS build failed with **OS error 32** after deleting the installed application files because it tried to remove its own directory while `Uninstall.exe` was still running.
+
+The corrected engine leaves that folder in place for post-exit cleanup. It launches a best-effort worker using built-in Windows PowerShell from System32, waits for `Uninstall.exe` to fully exit (including any **Press Enter** prompt), retries deleting only the uninstaller, then attempts to remove the installation folder **without recursive deletion**. A folder containing unrelated user files is preserved.
+
+The worker starts in the parent directory rather than inside the installation folder, preventing it from holding the folder open.
 
 If Windows PowerShell is unavailable or blocked by security policy, tracked application files can still be removed but the uninstaller itself may remain. The console warns when it cannot start cleanup. This lifecycle is not yet a hardened native cleanup service.
 

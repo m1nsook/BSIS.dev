@@ -13,7 +13,7 @@ The BSIS installer runtime now offers a **WebView2-based graphical window** as a
 
 The experimental GUI shows the real embedded product name, version, publisher and file count, allows the installation destination to be changed, performs installation through the same native Rust engine used by the console installer, and displays completion or a readable failure.
 
-The screen currently has an **indeterminate** installation indicator — it does not provide per-file progress percentages.
+The screen currently has an **indeterminate** installation indicator — it does not provide per-file progress percentages. The header and footer stay visible; only the main content scrolls on smaller windows or when completion details are long.
 
 ## Try it on Windows
 
@@ -26,6 +26,20 @@ Build a sample Setup.exe as described in [Getting started](./getting-started/) o
 Choose a **new or existing empty directory**, then select **Install now**. A nonempty directory is rejected without overwriting files. After success, the GUI displays the destination and a completion message. The installation folder also contains a native **Uninstall.exe**, which works without the original Setup.exe. See [Uninstaller](./uninstall/).
 
 Running Setup.exe **without arguments still opens console mode** in this prototype. The GUI does not yet open by default.
+
+## WebView2 developer tools
+
+Normal GUI mode disables right-click context menus, Inspect Element, browser accelerator shortcuts and Print. These are development tools, not options regular installer users need to see.
+
+To enable them explicitly while developing the installer UI:
+
+~~~powershell title="PowerShell · graphical UI developer mode"
+.\BSIS-Hello-Setup.exe gui --dev
+~~~
+
+With `--dev`, right-click and select **Inspect Element** to open WebView2 Developer Tools. Browser-specific shortcuts are also enabled. Without the flag, those menus and shortcuts stay disabled.
+
+The flag is opt-in for the `gui` command only. It does not grant the HTML UI additional filesystem privileges or bypass native path validation. Hiding Inspect Element is a UI choice, **not** a security boundary.
 
 ## Runtime requirements
 

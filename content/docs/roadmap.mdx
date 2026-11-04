@@ -21,13 +21,15 @@ description: Experimental implementation progress and next development milestone
 - [ ] Stable error reporting, installation journal and recovery after failures.
 - [ ] Reproducible builds and pinned dependencies.
 - [x] Bundle a separate native Uninstall.exe into each new installation (best-effort post-exit cleanup).
+- [x] Address Windows running-uninstaller sharing violations with deferred, non-recursive cleanup.
 - [ ] Register the uninstaller with Windows Apps & Features and harden cleanup for production.
 - [ ] Security review of privileged and concurrent filesystem operations.
 
 ## Next: developer interface
 
 - [ ] Decide the final manifest and typed TypeScript authoring API.
-- [x] Add an opt-in Windows WebView2 window with a fixed offline HTML/CSS installer preview (still requires desktop verification).
+- [x] Add an opt-in Windows WebView2 window with a fixed offline HTML/CSS installer preview (tested on a real Windows desktop).
+- [x] Gate WebView2 inspection tools behind an explicit `gui --dev` flag.
 - [ ] Support developer-provided customizable graphical installer screens.
 - [ ] Unify graphical, interactive terminal and silent installation plans.
 - [ ] Prototype safe extension points and built-in installer steps.
