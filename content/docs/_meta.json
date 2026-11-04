@@ -16,6 +16,10 @@
     "title": "Uninstaller"
   },
   {
+    "slug": "lifecycle",
+    "title": "Installer lifecycle"
+  },
+  {
     "slug": "configuration",
     "title": "Configuration"
   },
