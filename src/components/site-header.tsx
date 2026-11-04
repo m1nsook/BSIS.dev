@@ -49,8 +49,7 @@ export function SiteHeader({ searchEntries }: { searchEntries: DocsSearchEntry[]
           <span className="text-[11px] text-muted-foreground">Documentation</span>
         </span>
       </Link>
-      <nav aria-label="Primary navigation" className="ml-auto flex items-center gap-1 sm:gap-2">
-        <DocsSearch entries={searchEntries} />
+      <nav aria-label="Primary navigation" className="ml-3 flex items-center gap-0.5 sm:ml-7 sm:gap-1">
         <Link href="/docs" aria-current={isDocs ? "page" : undefined} className={"inline-flex h-9 items-center gap-2 rounded-md px-2.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm " + (isDocs ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/70 hover:text-foreground")}>
           <BookOpen aria-hidden="true" className="size-4" />
           <span className="hidden sm:inline">Guides</span>
@@ -59,11 +58,14 @@ export function SiteHeader({ searchEntries }: { searchEntries: DocsSearchEntry[]
           <Code2 aria-hidden="true" className="size-4" />
           <span className="hidden sm:inline">Reference</span>
         </Link>
-        <span className="mx-1 h-5 w-px bg-border sm:mx-2" aria-hidden="true" />
+      </nav>
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        <DocsSearch entries={searchEntries} />
+        <span className="h-5 w-px bg-border" aria-hidden="true" />
         <button type="button" onClick={toggleTheme} aria-label={dark ? "Use light theme" : "Use dark theme"} title={dark ? "Use light theme" : "Use dark theme"} className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
           {dark ? <Sun aria-hidden="true" className="size-4" /> : <Moon aria-hidden="true" className="size-4" />}
         </button>
-      </nav>
+      </div>
     </header>
   );
 }

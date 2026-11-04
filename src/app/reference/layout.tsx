@@ -18,6 +18,14 @@ export default async function ReferenceLayout({ children }: { children: React.Re
           <DocsSidebar items={items} baseHref="/docs" />
         </Docs.Sidebar>
         <Docs.Content>{children}</Docs.Content>
+        <Docs.Aside>
+          <Docs.Toc
+            items={[
+              { href: "#available-reference-guides", value: "Available reference guides", depth: 2 },
+              { href: "#public-availability", value: "Public availability", depth: 2 },
+            ]}
+          />
+        </Docs.Aside>
       </Docs.Layout>
     </div>
   );

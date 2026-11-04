@@ -18,7 +18,7 @@ export default function ReferenceIndex() {
           BSIS is not a web service, and it has no public HTTP API or released SDK.
           The old example API has been removed to avoid presenting fictional endpoints as working features.
         </p>
-        <h2>Available reference guides</h2>
+        <h2 id="available-reference-guides">Available reference guides</h2>
         <ul>
           <li><Link href="/docs/cli">CLI commands</Link> — build, inspect, install and uninstall, with flags and examples.</li>
           <li><Link href="/docs/configuration">Configuration</Link> — the implemented version 1 JSON build schema.</li>
@@ -26,7 +26,7 @@ export default function ReferenceIndex() {
           <li><Link href="/docs/security">Security model</Link> — verified safeguards and important limitations.</li>
           <li><Link href="/docs/troubleshooting">Troubleshooting</Link> — common setup and uninstall failures.</li>
         </ul>
-        <h2>Public availability</h2>
+        <h2 id="public-availability">Public availability</h2>
         <p>
           The core repository is private during development. These guides describe the testable
           prototype for maintainers with access; they are not a public release contract.
