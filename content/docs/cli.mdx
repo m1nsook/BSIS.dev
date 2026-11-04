@@ -16,7 +16,7 @@ BSIS uses one Rust executable as both a developer build tool (before packaging) 
 | `build` | Embed files into a standalone Windows executable | Unbundled builder |
 | `plan` | Validate config and inventory package files without creating Setup.exe | Unbundled builder |
 | `inspect` | Validate and list the packaged files | Builder or packaged setup |
-| `gui` | Launch the experimental offline HTML/CSS wizard | Packaged setup on Windows with WebView2 |
+| `gui` | Launch the experimental offline install or uninstall wizard | Packaged Setup.exe or installed Uninstall.exe on Windows with WebView2 |
 | `install` | Install to a new destination | Packaged setup |
 | `uninstall` | Remove only verified, tracked installed files | Installed Uninstall.exe or packaged setup |
 | `verify` | Audit receipt and file hashes without modifying anything | Setup.exe, installed Uninstall.exe, or builder |
@@ -108,7 +108,7 @@ The `--yes` option skips confirmation. It does **not** mean that updates, unatte
 
 This command launches a bundled offline HTML/CSS wizard. Enter a new or empty folder and select **Install now**. The progress bar uses **real native verified-file events**, and the finalization phase is distinct from completed installation. The GUI calls the same validated Rust installation function as console mode and displays the result. **No-argument Setup.exe still starts console mode.**
 
-This command is **not available on Linux** and does not bundle the WebView2 Runtime. The installed `Uninstall.exe` does not contain a package payload and cannot open the installer GUI. See [Installer UI](./installer-ui/) for the requirements, supported interactions and missing features.
+This command is **not available on Linux** and does not bundle the WebView2 Runtime. The installed `Uninstall.exe` does not contain a package payload: `Uninstall.exe gui` opens its **own receipt-verified removal wizard**, not the installer wizard. See [Installer UI](./installer-ui/) for requirements, supported interactions and missing features.
 
 ## Verify installed files
 
@@ -156,7 +156,7 @@ If you already opened PowerShell **in the folder containing Setup.exe**, prefix 
 & "$env:LOCALAPPDATA\BSIS-Hello-Test\Uninstall.exe" uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 ~~~
 
-You may also **double-click Uninstall.exe** in the application folder for a confirmation prompt. This native executable is copied from the Rust runtime during installation; it does not require the original Setup.exe or its compressed payload. On Windows, it launches a best-effort post-exit cleanup process to remove itself and the now-empty installation folder. Unrelated files are left untouched.
+To show the experimental graphical removal confirmation instead, run `.\Uninstall.exe gui` from its installation folder. This requires WebView2 on Windows. The GUI never accepts an arbitrary removal directory, uses the same native receipt verification and keeps untracked files. You may also **double-click Uninstall.exe** in the application folder for a console confirmation prompt. This native executable is copied from the Rust runtime during installation; it does not require the original Setup.exe or its compressed payload. On Windows, it launches a best-effort post-exit cleanup process to remove itself and the now-empty installation folder. Unrelated files are left untouched.
 
 Older installs with no Uninstall.exe can still be removed using the original Setup.exe. Read the dedicated [Uninstaller guide](./uninstall/) for safety guarantees and limitations.
 

@@ -51,6 +51,16 @@ New installations include Uninstall.exe in the installation root. You can double
 
 If Uninstall.exe was removed, Setup.exe can still uninstall the application. The native uninstaller checks its receipt and refuses to delete modified tracked files. The final cleanup of a running Windows executable is **best-effort**: built-in Windows PowerShell waits for it to exit, removes it, then removes the directory **only if empty**. Antivirus policies or Windows PowerShell restrictions may leave Uninstall.exe behind. Never delete a directory containing unrelated user files to force cleanup.
 
+## Uninstall.exe gui says the installer package is missing
+
+Older artifacts had an installer-only GUI that tried to inspect an embedded Setup.exe payload, which the installed Uninstall.exe correctly does not contain. Recent BSIS builds have **separate graphical installer and uninstaller screens**. Update your BSIS-built application and run the installed executable from its own directory:
+
+~~~powershell
+.\Uninstall.exe gui
+~~~
+
+The uninstaller GUI requires WebView2. If it is unavailable, double-click Uninstall.exe for console mode or use `uninstall --target <absolute-path> --yes` in PowerShell. A missing or invalid receipt will still block removal rather than authorizing deletion of arbitrary files.
+
 ## Uninstall.exe reports OS error 32
 
 An early version could show `removing empty installation root: The process cannot access the file because it is being used by another process (os error 32)` when double-clicking the installed uninstaller.
