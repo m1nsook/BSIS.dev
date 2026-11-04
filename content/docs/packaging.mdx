@@ -39,7 +39,7 @@ The builder requires a runtime compiled for Windows; a Linux binary is not inter
 
 ## Build and inspect
 
-~~~powershell
+~~~powershell title="PowerShell · Build and inspect"
 cargo build --release -p bsis
 cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
 .\BSIS-Hello-Setup.exe inspect
