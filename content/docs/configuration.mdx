@@ -3,7 +3,9 @@ title: Configuration
 description: The implemented version 1 JSON build manifest, validation rules and future ideas.
 ---
 
-> **Implemented but experimental.** This is the JSON schema consumed by the current Rust builder. It can change before the first public release. TypeScript examples later on this page are **concepts only**.
+<Callout type="info" title="Implemented, but not stable">
+  This is the JSON schema used by the current Rust builder. It can change before release. TypeScript examples below are concepts only.
+</Callout>
 
 ## Minimal working configuration
 
@@ -16,7 +18,7 @@ hello/
     └── hello.txt
 ~~~
 
-~~~json
+~~~json title="bsis.json"
 {
   "schema_version": 1,
   "product": {
@@ -70,7 +72,7 @@ See [CLI reference](./cli/) for full flags and [Packaging](./packaging/) for the
 
 The following is a **design sketch**, not an importable package or supported BSIS configuration:
 
-~~~typescript
+~~~typescript title="bsis.config.ts · concept only"
 // Concept only — @bsis/core is not published.
 import { defineConfig } from "@bsis/core";
 

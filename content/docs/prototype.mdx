@@ -3,7 +3,9 @@ title: Rust prototype
 description: Build and test the first standalone Windows console installer.
 ---
 
-> **Experimental maintainer preview.** The following source code is private. These commands are not for a publicly released or production-ready BSIS tool.
+<Callout type="warning" title="Experimental maintainer preview">
+  The Rust source is private. These examples document the testable console prototype, not a public installer or production-ready tool.
+</Callout>
 
 ## Implementation
 
@@ -18,7 +20,7 @@ The builder appends a Zstandard-compressed bundle to a compiled native Windows P
 
 With the stable Rust toolchain and the private repository checked out:
 
-~~~powershell
+~~~powershell title="PowerShell · build the Rust prototype"
 cargo test --workspace --all-targets
 cargo build --release -p bsis
 
@@ -29,7 +31,7 @@ A Linux-compiled binary is not a replacement for the required Windows runtime.
 
 ## Inspect and install
 
-~~~powershell
+~~~powershell title="PowerShell · inspect, install and uninstall"
 .\BSIS-Hello-Setup.exe inspect
 .\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"

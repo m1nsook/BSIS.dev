@@ -53,3 +53,12 @@ The `/reference` route describes real prototype commands and manifest behavior r
 ## Source of truth
 
 Keep docs in sync with the private BSIS core repository. The implemented Rust CLI and manifest schema take precedence over older aspirational examples.
+
+
+## AriaDocs presentation components
+
+The documentation uses the package's `Pre` for highlighted, copyable fenced-code blocks. Its demo-like `Tabs` / `Tab`, `Callout`, and `Cards` / `Card` MDX components are registered in `src/components/mdx-components.tsx`.
+
+Write a language after the code fence marker for syntax highlighting, and optionally add `title="example.ps1"` to display a code-file header. Copy buttons are available on every fenced code block.
+
+Guides and the /reference index share `src/components/docs-shell.tsx`, including a persistent sidebar search field, page navigation and appearance controls. The marketing home retains its own header; do not add a second top header inside the documentation.

@@ -1,4 +1,5 @@
 import { createDocs } from "@ariadocs/mdx";
+import { mdxComponents } from "@/components/mdx-components";
 import {
   remarkGfm,
   rehypeSlug,
@@ -10,6 +11,7 @@ import {
 
 export const docs = createDocs({
   contentDir: "content/docs",
+  components: mdxComponents,
   remarkPlugins: [remarkGfm],
   rehypePlugins: [
     rehypeSlug,
