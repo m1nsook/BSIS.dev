@@ -1,30 +1,24 @@
-import { Docs, OpenAPI } from "@ariadocs/components";
+import { Docs } from "@ariadocs/components";
 import { DocsSidebar } from "@/components/docs-sidebar";
-import { openapi } from "@/lib/openapi";
+import { getDocsNavigation } from "@/lib/docs-navigation";
 
-export default async function ReferenceLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const api = await openapi.parse();
-  const items = await openapi.getNavigation({
-    getOperationHref: (operation) => `/reference/${operation.id}`,
-  });
-
+export default async function ReferenceLayout({ children }: { children: React.ReactNode }) {
+  const items = await getDocsNavigation();
   return (
-    <OpenAPI.Root api={api} operationBaseHref="/reference">
-      <div className="bsis-docs-shell">
-        <nav aria-label="API endpoints" className="border-b border-border px-4 py-3 lg:hidden">
-          <DocsSidebar items={items} />
+    <div className="bsis-docs-shell">
+      <details className="border-b border-border lg:hidden">
+        <summary className="cursor-pointer px-5 py-3 text-sm font-medium">Browse documentation</summary>
+        <nav aria-label="Documentation pages" className="max-h-[55vh] overflow-y-auto border-t border-border px-4 py-3">
+          <DocsSidebar items={items} baseHref="/docs" />
         </nav>
-        <Docs.Layout>
-          <Docs.Sidebar>
-          <DocsSidebar items={items} />
-          </Docs.Sidebar>
-          <Docs.Content>{children}</Docs.Content>
-        </Docs.Layout>
-      </div>
-    </OpenAPI.Root>
+      </details>
+      <Docs.Layout>
+        <Docs.Sidebar>
+          <div className="px-3 pt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">Documentation</div>
+          <DocsSidebar items={items} baseHref="/docs" />
+        </Docs.Sidebar>
+        <Docs.Content>{children}</Docs.Content>
+      </Docs.Layout>
+    </div>
   );
 }

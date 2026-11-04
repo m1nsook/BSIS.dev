@@ -1,0 +1,45 @@
+---
+title: Security model
+description: Current installer safeguards, trust boundaries and gaps before public release.
+---
+
+The BSIS installer performs sensitive filesystem operations. The initial Rust prototype takes a deliberately narrow approach: it only writes a verified package into a new installation directory.
+
+> **Not production-ready.** These are safeguards in a proof of concept, not a complete security review. There is no Authenticode signing, trusted publisher verification, privileged Windows integration or hardened concurrent-filesystem threat model yet.
+
+## Implemented safeguards
+
+| Area | Current behavior |
+| --- | --- |
+| Manifest | Strict schema version 1; unknown JSON fields are rejected |
+| Paths | Rejects path traversal and invalid Windows destination names |
+| Package contents | Explicit file list with sizes and SHA-256 hashes |
+| Bundle integrity | Checks compressed payload digest before extraction |
+| Extraction | Verifies each extracted file while writing to a staging directory |
+| Commit | Renames the completed stage to a new target after verification |
+| Existing installs | Refuses to install over an existing target |
+| Uninstall | Validates the receipt and hashes before deleting tracked files |
+| Source input | Rejects unsupported links and reparse points during packaging |
+
+The prototype also caps manifest size, file count and total declared payload size. These limits are not a promise that every large package will work on every Windows system.
+
+## Checksums are not signatures
+
+SHA-256 detects accidental corruption and unexpected file changes. It **does not authenticate the source** of a setup executable or prove that the publisher is trusted. Signing and verification must be designed and tested before production distribution.
+
+## Install vs. uninstall
+
+During install, BSIS unpacks into a fresh directory beside the requested target and only moves it into position after extraction completes. This reduces incomplete installations but is not a general-purpose transaction manager.
+
+During uninstall, BSIS preserves files it did not install. If even one tracked file has changed, the preflight check refuses to proceed. It does not register a Windows uninstaller or support repairs yet.
+
+## Unimplemented protections and capabilities
+
+- Secure administrator elevation and UAC workflows.
+- Authenticode signing and publisher trust verification.
+- Hardened handling of concurrent filesystem modifications or hostile local processes.
+- Windows services, registry modifications, shortcuts and Apps & Features registration.
+- Updates into existing directories, rollback, repair and recovery journals.
+- Safe runtime plugin permissions or a documented privileged action protocol.
+
+See [Architecture](./architecture/) and [Roadmap](./roadmap/) for planned boundaries. Report security findings privately while the core remains in development.

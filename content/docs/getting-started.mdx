@@ -1,26 +1,70 @@
 ---
 title: Getting started
-description: What is available today and how to explore BSIS.
+description: Requirements, a tested prototype workflow and links to deeper guides.
 ---
 
-## Public availability
+> **Private maintainer preview.** BSIS has no public CLI package, downloadable setup builder or stable SDK. The steps below require access to the private BSIS source repository.
 
-BSIS core is a **private, experimental Rust repository**, not a published CLI or library yet. There is no public binary release.
+## Requirements
 
-The first source prototype is documented in the [Rust prototype guide](./prototype/), including build, install and uninstall commands for maintainers with access to the private repository.
+- A Windows development machine with the stable Rust toolchain and Cargo.
+- Source access to the private `BSIS` repository.
+- PowerShell for the commands below.
+- A new, writable destination directory for testing. **Do not target real application installs.**
 
-For the longer-term vision, see [architecture](./architecture/), [configuration](./configuration/), and [roadmap](./roadmap/).
+Bun and Node.js are **not required on the target PC** to run a compiled BSIS Windows installer. They are used for the documentation website and may be part of future developer tooling.
 
-## Working on BSIS.dev
+## 1. Build the experimental CLI
 
-The documentation site uses Next.js 16, AriaDocs, Tailwind CSS 4 and Bun.
+From the root of the private repository:
+
+~~~powershell
+cargo test --workspace --all-targets
+cargo build --release -p bsis
+~~~
+
+## 2. Create a standalone Setup.exe
+
+The example project includes `examples/hello/bsis.json` and a small payload.
+
+~~~powershell
+cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
+~~~
+
+The generated `BSIS-Hello-Setup.exe` contains both the Windows runtime and compressed payload. The runtime supplied with `--runtime` must be a Windows executable.
+
+## 3. Inspect and install
+
+~~~powershell
+.\BSIS-Hello-Setup.exe inspect
+.\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"
+~~~
+
+The target must not already exist. The console installer prints an error rather than overwrite an existing directory.
+
+## 4. Uninstall
+
+~~~powershell
+.\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+Keep the original setup executable for uninstalling; a separate registered Windows uninstaller is not implemented yet. If tracked files have changed, uninstall refuses to remove them.
+
+## Next steps
+
+Read the [CLI reference](./cli/) for each command and flag, [Configuration](./configuration/) for the current JSON format and [Troubleshooting](./troubleshooting/) when something goes wrong.
+
+## Working on the documentation website
+
+BSIS.dev is separate from the private engine and uses Next.js, AriaDocs, Tailwind CSS and Bun.
 
 ~~~powershell
 bun install --frozen-lockfile
 bun run dev
 ~~~
 
-To check changes before opening a pull request:
+Before publishing documentation changes:
 
 ~~~powershell
 bun run lint
@@ -28,4 +72,4 @@ bunx tsc --noEmit
 bun run build
 ~~~
 
-The site automatically deploys from the public BSIS.dev main branch using GitHub Actions. The current address is https://m1nsook.github.io/BSIS.dev/.
+GitHub Actions deploys the statically exported site to [BSIS.dev on GitHub Pages](https://m1nsook.github.io/BSIS.dev/).

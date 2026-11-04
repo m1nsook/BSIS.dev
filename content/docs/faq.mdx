@@ -1,0 +1,44 @@
+---
+title: FAQ
+description: Frequently asked questions about BSIS, its current status and planned features.
+---
+
+## What does BSIS stand for?
+
+**Better NSIS.** It is an independent project exploring a modern, design-first Windows installer framework. Its goal is not to repackage NSIS under another name.
+
+## Can I download BSIS?
+
+Not yet. The Rust core is private and the current proof of concept is not a public release. The documentation is public so design decisions and implemented capabilities can be followed as the project develops.
+
+## Is there a graphical installer?
+
+No. The current working prototype uses a native **console interface**. Custom GUI screens built with web technologies are being explored; no renderer or public UI API is finalized.
+
+## Which languages can I use?
+
+The current engine is written in **Rust** and accepts **JSON** build configurations. TypeScript, JavaScript, Svelte and other languages are future developer experience options, not supported source plugins today.
+
+## Which compression algorithms work?
+
+**Zstandard** is implemented for embedded offline payloads. LZMA2 and LZ4 are proposed compression presets.
+
+## Does `--yes` make it a silent installer?
+
+It skips the confirmation prompt for the prototype commands, but full unattended deployment, exit-code contracts and silent GUI behavior need further work.
+
+## Is BSIS safe for production distribution?
+
+No. The proof of concept is explicitly experimental. Publisher signing, upgrade safety, UAC, platform compatibility and security hardening are incomplete. See [Security model](./security/).
+
+## Does it support updating an existing installation?
+
+Not yet. Installation requires a **new target directory**. Updating, repairing, rollback and Windows application registration are on the [roadmap](./roadmap/).
+
+## Why does the site have documentation before a public release?
+
+To document verified behavior, track architectural decisions and help avoid confusing future proposals with current capabilities. The site is updated independently of the private engine.
+
+## Where can I find exact commands?
+
+Use [CLI reference](./cli/) for the implemented commands or [Getting started](./getting-started/) for a complete test workflow.

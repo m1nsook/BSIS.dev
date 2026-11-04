@@ -1,40 +1,60 @@
 ---
 title: Packaging
-description: Current Zstandard payload format, integrity checks and planned compression options.
+description: Current Zstandard executable bundles, validation and proposed compression presets.
 ---
 
-## Implemented: Zstandard prototype
+## How the prototype bundle works
 
-The BSIS builder currently produces a standalone Windows setup executable by **appending a Zstandard-compressed payload** to a compiled Rust Windows PE runtime.
+The BSIS builder creates a self-contained setup executable by appending a **Zstandard-compressed file payload** to an existing native Windows PE runtime.
 
 ~~~text
-Setup.exe
-├── Rust Windows PE executable
-├── Zstandard stream
-│   ├── Payload magic + manifest length
-│   ├── Versioned JSON package manifest
-│   └── Sequential file contents
-└── Footer: magic + offset + compressed length + SHA-256
+BSIS-Hello-Setup.exe
+├── Native Windows runtime
+├── Compressed Zstandard stream
+│   ├── Payload magic and manifest length
+│   ├── Versioned package manifest
+│   └── File content, in manifest order
+└── Footer: magic, offset, length and SHA-256
 ~~~
 
-The manifest tracks each file's relative path, byte size and SHA-256 checksum. Before extracting, the runtime checks the compressed package digest. Each extracted file is then hashed as it is written.
+The builder requires a runtime compiled for Windows; a Linux binary is not interchangeable with a Windows setup executable.
 
-The format is provisional, with no published compatibility guarantee.
+## Build and inspect
 
-## Installation safety
+~~~powershell
+cargo build --release -p bsis
+cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
+.\BSIS-Hello-Setup.exe inspect
+~~~
 
-The prototype rejects relative path traversal, invalid Windows file names and unsupported source links/reparse points. Extraction takes place in a fresh staging directory, followed by a rename into a new installation target. Existing installation targets are rejected.
+The embedded manifest enumerates each file's relative path, byte length and SHA-256 checksum. The footer identifies the compressed stream and its digest. Inspection verifies bundle structure and digest.
 
-Uninstall uses a receipt and refuses to delete modified tracked files. This is a safeguard against accidental data loss, not a complete threat model for adversarial concurrent filesystem changes.
+## Extraction and commit
 
-## Future compression presets
+1. Validate the package metadata and target path.
+2. Refuse to install into an existing directory.
+3. Create a fresh staging directory beside the target.
+4. Decompress and write each file, verifying its hash.
+5. Store the installation receipt and rename the completed stage into place.
 
-| Possible preset | Algorithm | Status |
+If extraction fails before the final rename, the temporary stage is removed. This does not provide upgrade rollback or protect against all concurrent filesystem attacks.
+
+## Integrity and limits
+
+The runtime checks the compressed package digest and hashes extracted files against manifest entries. Invalid destination paths, conflicting names, unsupported source links and mismatched hashes are rejected.
+
+The current Rust manifest imposes limits on manifest bytes, file count and total declared payload size. These are defensive bounds, not proof of production readiness.
+
+**SHA-256 is not a signature:** a malicious publisher could generate a different executable with internally consistent checksums. Authenticode signing and verification are future work.
+
+## Future compression choices
+
+| Proposed preset | Codec | Status |
 | --- | --- | --- |
-| Maximum | LZMA2 | Planned, not implemented |
-| Balanced | Zstandard | Current fixed prototype encoder |
-| Fast | LZ4 | Planned, not implemented |
+| Maximum | LZMA2 | Not implemented |
+| Balanced | Zstandard | Current prototype codec |
+| Fast | LZ4 | Not implemented |
 
-## Trust and code signing
+The binary layout is provisional. Do not build tooling that assumes long-term compatibility with the current overlay or footer format.
 
-A checksum is **not a digital signature**. Authenticode signing and verification, public release packaging, safe elevation and additional Windows attack-surface testing are still needed before using BSIS for production software.
+For the manifest fields see [Configuration](./configuration/); for install and uninstall safeguards see [Security model](./security/).

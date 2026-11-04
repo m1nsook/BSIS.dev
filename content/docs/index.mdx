@@ -1,23 +1,45 @@
 ---
-title: BSIS Documentation
-description: Better NSIS — a design-first Windows installer framework.
+title: BSIS documentation
+description: A practical guide to the Better NSIS installer framework and its experimental Rust core.
 ---
 
-**BSIS (Better NSIS)** is an early-stage open-source project for building customizable Windows installers.
+BSIS (**Better NSIS**) is a design-first Windows installer framework in early development. Its goal is to let developers build a custom installation experience while a native engine handles packaging and filesystem operations.
 
-> **Current status: Experimental Rust prototype.** The core source repository remains private. No public installer builder, supported SDK or production release exists yet.
+> **Status: experimental prototype, not a public release.** The core repository is currently private. The existing Rust code can build, inspect, install and uninstall simple offline packages. UI customization, plugins and updates are plans, not released features.
 
-## What exists today
+## Choose your starting point
 
-A first Rust proof of concept supports JSON-defined file payloads, a standalone Windows Setup.exe with **Zstandard-compressed files**, a console installer, SHA-256 verification and a cautious receipt-based uninstall. These features remain experimental.
+| I want to… | Read |
+| --- | --- |
+| Understand the project and its current availability | [Getting started](./getting-started/) |
+| Build the proof-of-concept installer on Windows | [Rust prototype](./prototype/) |
+| Look up actual executable commands and flags | [CLI reference](./cli/) |
+| Package an app using the current JSON format | [Configuration](./configuration/) |
+| Understand the embedded payload and compression | [Packaging](./packaging/) |
+| Review safety boundaries before testing | [Security model](./security/) |
+| See what BSIS might become | [Architecture](./architecture/) and [roadmap](./roadmap/) |
 
-- [Rust prototype](./prototype/) — Windows build and test commands.
-- [Configuration](./configuration/) — the actual version 1 JSON schema.
-- [Packaging](./packaging/) — the provisional embedded archive format.
-- [Roadmap](./roadmap/) — what is implemented and what comes next.
+## What works today
 
-## The long-term vision
+The initial Rust proof of concept implements a self-contained Windows `Setup.exe` with a Zstandard-compressed file payload.
 
-BSIS aims to make installer development feel like building a website. Custom graphical interfaces, a TypeScript authoring API, multiple compression algorithms, a plugin ecosystem, a full Windows integration layer, and production-ready updater/repair workflows remain **planned features**.
+- A strict, versioned JSON build manifest and relative file mappings.
+- A Rust builder that appends the compressed payload to a Windows executable.
+- A console runtime with interactive confirmation and a `--yes` automation flag.
+- Integrity checks for the bundle and extracted files using SHA-256.
+- Installation into a **new directory**, using a staging directory before committing files.
+- A receipt-based uninstall that refuses to delete modified tracked files.
 
-Public documentation will continue to evolve while the engine stays private through development.
+These capabilities are still being hardened and may change without compatibility guarantees.
+
+## What's planned
+
+Graphical installers built with web UI technologies, richer terminal experiences, silent deployment profiles, compression presets, safe Windows system integration, plugins, repair, and update workflows are **not yet implemented**.
+
+See [Installer UI](./installer-ui/), [Plugins](./plugins/) and [Roadmap](./roadmap/) for design direction and priorities.
+
+## Documentation conventions
+
+This site distinguishes **Implemented** (present in the Rust prototype), **Experimental** (working but not production-ready), and **Proposed** (design work only). Snippets marked *concept only* must not be treated as working BSIS APIs.
+
+Use the search box or `Ctrl+K` to find pages, flags and configuration fields.
