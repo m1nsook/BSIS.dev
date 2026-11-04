@@ -17,7 +17,7 @@ BSIS uses one Rust executable as both a developer build tool (before packaging) 
 | `inspect` | Validate and list the packaged files | Builder or packaged setup |
 | `gui` | Launch the experimental offline HTML/CSS wizard | Packaged setup on Windows with WebView2 |
 | `install` | Install to a new destination | Packaged setup |
-| `uninstall` | Remove only verified, tracked installed files | Packaged setup |
+| `uninstall` | Remove only verified, tracked installed files | Installed Uninstall.exe or packaged setup |
 
 ## Build
 
@@ -85,7 +85,7 @@ This command is **not available on Linux** and does not bundle the WebView2 Runt
 | `--target <path>` | Yes | Absolute path of an installation with a BSIS receipt |
 | `--yes` | No | Skip the uninstall confirmation prompt |
 
-BSIS checks the receipt and hashes of tracked files before deleting anything. A modified tracked file blocks uninstall; unrelated files are retained. This is not yet integrated into Windows Apps & Features.
+BSIS checks the receipt and hashes of tracked files (including its own managed Uninstall.exe) before deleting anything. Modified tracked files block uninstall; unrelated files are retained. New installs include a native Uninstall.exe, but Windows Apps & Features registration is still missing.
 
 PowerShell requires the call operator `&` before **quoted executable paths**. For example, if Setup.exe is saved on the Desktop:
 
@@ -100,6 +100,16 @@ If you already opened PowerShell **in the folder containing Setup.exe**, prefix 
 ~~~
 
 **The setup executable must exist at the given path.** Windows does not automatically preserve EXEs opened from a ZIP archive. Extract the ZIP to a permanent folder before installation; otherwise, the printed temporary path may no longer exist later.
+
+### Installed uninstaller (new installs)
+
+~~~powershell title="PowerShell · standalone native uninstall"
+& "$env:LOCALAPPDATA\BSIS-Hello-Test\Uninstall.exe" uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+You may also **double-click Uninstall.exe** in the application folder for a confirmation prompt. This native executable is copied from the Rust runtime during installation; it does not require the original Setup.exe or its compressed payload. On Windows, it launches a best-effort post-exit cleanup process to remove itself and the now-empty installation folder. Unrelated files are left untouched.
+
+Older installs with no Uninstall.exe can still be removed using the original Setup.exe. Read the dedicated [Uninstaller guide](./uninstall/) for safety guarantees and limitations.
 
 ## Exit and error behavior
 

@@ -1,0 +1,52 @@
+---
+title: Uninstaller
+description: Native receipt-verified removal without keeping the original Setup.exe.
+---
+
+<Callout type="warning" title="Private, experimental implementation">
+  The installed native uninstaller is part of the private BSIS prototype. It has not been publicly released, registered with Windows Apps & Features or audited for production deployment.
+</Callout>
+
+## Installed Uninstall.exe
+
+Every new BSIS prototype installation contains a **native Uninstall.exe** in the installation root. It is built from the Rust runtime portion of Setup.exe without duplicating the compressed application payload.
+
+This solves an early usability problem: users no longer need the original Setup.exe, which could disappear if Windows had extracted it temporarily from a ZIP.
+
+## How to uninstall
+
+You may **double-click Uninstall.exe** and confirm, or run the installed executable from PowerShell:
+
+~~~powershell title="PowerShell · remove a test installation"
+& "$env:LOCALAPPDATA\BSIS-Hello-Test\Uninstall.exe" uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+Use the actual installation path you chose. For a file in your current PowerShell folder, prefix it with a dot and backslash. For a quoted full path, prefix it with the & call operator.
+
+The old Setup.exe uninstall --target command remains supported, including for installations made before this native uninstaller was added.
+
+## What BSIS removes
+
+The engine reads the receipt file and verifies the recorded hashes before removing **tracked files only**. The receipt now also stores the installed Uninstall.exe's size and SHA-256 checksum.
+
+- If a tracked payload file changed, **nothing is deleted**.
+- If the managed Uninstall.exe changed, **nothing is deleted**.
+- If unrelated user files are present, they are **preserved** and the installation directory remains.
+- If everything was removed successfully, BSIS attempts to clean up the installation directory.
+
+A checksum detects changes; it does **not** prove who published the executable.
+
+## Removing a running uninstaller on Windows
+
+Windows may not allow an executable to delete itself while it is running. The prototype uses a best-effort second step: it starts the built-in Windows PowerShell executable from the fixed System32 path, waits for the Rust uninstaller process to exit, then attempts to delete Uninstall.exe and the **empty** installation directory.
+
+If Windows PowerShell is unavailable or blocked by security policy, tracked application files can still be removed but the uninstaller itself may remain. The console warns when it cannot start cleanup. This lifecycle is not yet a hardened native cleanup service.
+
+## Still missing
+
+- Windows Apps & Features / Add or Remove Programs registration.
+- Repair, update, per-machine uninstall and UAC support.
+- Robust recovery after power loss or concurrent hostile filesystem changes.
+- Code signing, publisher verification and stable installer metadata.
+
+These are future milestones. See [Security model](./security/) and [Roadmap](./roadmap/).

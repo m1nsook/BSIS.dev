@@ -18,7 +18,7 @@ The BSIS installer performs sensitive filesystem operations. The initial Rust pr
 | Extraction | Verifies each extracted file while writing to a staging directory |
 | Commit | Renames the completed stage to a new target after verification |
 | Existing installs | Accepts a new or existing empty directory, but refuses to overwrite a nonempty target |
-| Uninstall | Validates the receipt and hashes before deleting tracked files |
+| Uninstall | Validates the receipt and hashes, including managed Uninstall.exe, before deleting tracked files |
 | Source input | Rejects unsupported links and reparse points during packaging |
 
 The prototype also caps manifest size, file count and total declared payload size. These limits are not a promise that every large package will work on every Windows system.
@@ -31,7 +31,7 @@ SHA-256 detects accidental corruption and unexpected file changes. It **does not
 
 During install, BSIS unpacks into a fresh directory beside the requested target and only moves it into position after extraction completes. If the destination already exists and is empty, the prototype temporarily moves it aside and attempts restoration if committing the staged installation fails. This reduces incomplete installations but is not a general-purpose transaction manager.
 
-During uninstall, BSIS preserves files it did not install. If even one tracked file has changed, the preflight check refuses to proceed. It does not register a Windows uninstaller or support repairs yet.
+During uninstall, BSIS preserves files it did not install. If a tracked file or the installed Uninstall.exe has changed, a preflight check refuses to proceed. New installs include their own native Uninstall.exe. Windows executes a best-effort post-exit cleanup helper to remove the running uninstaller and, if empty, its folder. Apps & Features registration and repair are still missing.
 
 ## Unimplemented protections and capabilities
 
