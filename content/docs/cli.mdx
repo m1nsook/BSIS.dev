@@ -45,6 +45,15 @@ cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/re
 | `--config <path>` | Yes | JSON build configuration (schema version 1) |
 | `--runtime <path>` | Yes | Unbundled Windows PE executable to package |
 | `--output <path>` | Yes | Path for the generated setup executable |
+| `--compression-level <1..19>` | No | Zstandard compression level (default 3); higher levels trade packaging time for potentially smaller files |
+
+You can select a supported compression level without modifying the JSON config:
+
+~~~powershell title="PowerShell · compression level 9"
+cargo run -p bsis --locked -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe --compression-level 9
+~~~
+
+Invalid levels (for example 0 or 20) fail before the setup executable is created. `build` without this flag continues to use Zstandard level 3. The build summary now reports the selected level. See [Packaging](./packaging/) for behavior, tradeoffs and verification.
 
 See [Configuration](./configuration/) for the supported JSON fields. The builder appends the Zstandard-compressed payload to the provided runtime. The runtime now contains a **fixed opt-in WebView2 GUI**; it does not yet compile developer-supplied HTML/Svelte/React screens.
 
