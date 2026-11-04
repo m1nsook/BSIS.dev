@@ -1,41 +1,42 @@
 ---
 title: Roadmap
-description: The proposed path from design exploration to the first BSIS release.
+description: Experimental implementation progress and next development milestones.
 ---
 
-## Project status
+## Initial Rust prototype
 
-**Early design.** This roadmap describes intended work; it does not imply completion or a delivery date.
+- [x] Separate Rust core and CLI crates.
+- [x] Strict version 1 JSON manifest and Windows path validation.
+- [x] Zstandard compressed payload appended to a Windows setup executable.
+- [x] SHA-256 digest verification and receipt-based uninstall.
+- [x] Installation into a new directory using staging and a final rename.
+- [x] Console installation commands and unattended --yes mode.
+- [x] Linux/Windows test workflows with a Windows end-to-end smoke test.
 
-## Foundation
+**These checkboxes describe prototype code, not a production release or public API.**
 
-- [ ] Choose and document a native runtime prototype.
-- [ ] Design a minimal versioned internal installation manifest.
-- [ ] Produce a standalone Windows Setup.exe that installs one test application.
-- [ ] Support destination selection and reliable uninstall.
-- [ ] Verify payload integrity and basic failure recovery.
+## Next: hardening
 
-## Developer experience
+- [ ] Extended Windows compatibility and large-payload testing.
+- [ ] Stable error reporting, installation journal and recovery after failures.
+- [ ] Reproducible builds and pinned dependencies.
+- [ ] Registered uninstaller and Windows application registration.
+- [ ] Security review of privileged and concurrent filesystem operations.
 
-- [ ] Prototype a typed configuration file and validation errors.
-- [ ] Compile a simple custom GUI screen into an installer.
-- [ ] Add a small set of built-in steps and event hooks.
-- [ ] Support unattended installation and useful exit codes.
-- [ ] Validate a basic console presentation of the same installation plan.
+## Next: developer interface
 
-## Packaging and Windows
+- [ ] Decide the final manifest and typed TypeScript authoring API.
+- [ ] Prototype a customizable graphical installer.
+- [ ] Unify graphical, interactive terminal and silent installation plans.
+- [ ] Prototype safe extension points and built-in installer steps.
 
-- [ ] Compare LZMA2, Zstandard and LZ4 on representative payloads.
-- [ ] Decide how offline WebView2 requirements are handled.
-- [ ] Add safe shortcuts, installation registration and UAC integration.
-- [ ] Design signing and reproducible build workflows.
+## Before a public release
 
-## Before the first public release
+- [ ] Add Windows shortcuts, services, registry operations and controlled UAC.
+- [ ] Explore LZMA2, LZ4 and compression presets.
+- [ ] Implement repairs, upgrades and transactional rollback.
+- [ ] Integrate Authenticode signing and verification.
+- [ ] Ship examples, reliable Windows tests and documented supported APIs.
+- [ ] Make BSIS core source public when the framework is ready.
 
-- [ ] Publish the supported configuration reference and CLI guide.
-- [ ] Provide end-to-end Windows installation tests.
-- [ ] Security-review path handling, elevated operations and extensions.
-- [ ] Publish example projects and compatibility notes.
-- [ ] Open the BSIS engine repository when it is ready for community use.
-
-Features and order may change based on prototype findings.
+The timeline and priorities may change as implementation reveals constraints.

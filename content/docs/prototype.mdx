@@ -1,0 +1,50 @@
+---
+title: Rust prototype
+description: Build and test the first standalone Windows console installer.
+---
+
+> **Experimental maintainer preview.** The following source code is private. These commands are not for a publicly released or production-ready BSIS tool.
+
+## Implementation
+
+| Crate | Responsibility |
+| --- | --- |
+| **bsis-core** | Versioned manifests, payload packaging, path validation, file installation and uninstall |
+| **bsis** | Build, inspect, install, uninstall and interactive console commands |
+
+The builder appends a Zstandard-compressed bundle to a compiled native Windows PE runtime. The runtime can run completely offline without Bun or Node.js on the target system.
+
+## Build on Windows
+
+With the stable Rust toolchain and the private repository checked out:
+
+~~~powershell
+cargo test --workspace --all-targets
+cargo build --release -p bsis
+
+cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
+~~~
+
+A Linux-compiled binary is not a replacement for the required Windows runtime.
+
+## Inspect and install
+
+~~~powershell
+.\BSIS-Hello-Setup.exe inspect
+.\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"
+.\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+Running Setup.exe without a command starts a simple interactive console prompt. Supplying --yes skips the confirmation prompt.
+
+## Safeguards and limits
+
+- Installations only target **new, nonexistent directories**. The parent directory must already exist for an explicitly provided target.
+- Files are unpacked into a staging directory and verified before they are moved into place.
+- A receipt lists installed files. Uninstall checks hashes and refuses to delete modified tracked files.
+- The current setup executable must be retained to invoke the uninstall operation; no registered uninstaller exists yet.
+- There is no GUI, UAC, shortcuts, registry integration, Windows services, signing, LZMA2, updater or public plugin API.
+- SHA-256 checksums detect corruption but do **not** authenticate a publisher.
+
+Do not use this prototype for production distribution.

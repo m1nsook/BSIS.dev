@@ -8,6 +8,10 @@
     "title": "Getting started"
   },
   {
+    "slug": "prototype",
+    "title": "Rust prototype"
+  },
+  {
     "slug": "vision",
     "title": "Vision"
   },

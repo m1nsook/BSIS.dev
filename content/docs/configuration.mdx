@@ -1,46 +1,54 @@
 ---
 title: Configuration
-description: Ideas for a typed BSIS project configuration.
+description: Current experimental JSON schema and future TypeScript authoring proposal.
 ---
 
-> **Draft API.** The following sample does not represent a published BSIS package, an implemented builder or a frozen schema.
+## Implemented version 1 JSON format
 
-## A typed project file
+The first Rust builder accepts a strict JSON file:
 
-A TypeScript entry point such as `bsis.config.ts` is one promising direction. It could offer autocomplete, composition and reusable build settings.
+~~~json
+{
+  "schema_version": 1,
+  "product": {
+    "id": "bsis.hello",
+    "name": "BSIS Hello",
+    "version": "0.1.0",
+    "publisher": "BSIS"
+  },
+  "files": [
+    { "from": "payload", "to": "app" }
+  ]
+}
+~~~
 
-```typescript
-// Illustrative only — not currently runnable.
+| Field | Purpose |
+| --- | --- |
+| **schema_version** | Required integer, currently 1 |
+| **product.id** | ASCII product identifier |
+| **product.name** | Display name |
+| **product.version** | Version label |
+| **product.publisher** | Publisher label |
+| **files[].from** | A source file or directory relative to this JSON file |
+| **files[].to** | A destination relative to the installation root |
+
+Directory mappings recursively include regular files. Destinations use forward slashes and are checked against traversal, duplicate names and invalid Windows path components.
+
+The schema is **not stable**. The builder deliberately rejects unknown keys rather than silently ignoring unsupported installation features.
+
+## Proposed TypeScript configuration
+
+A future developer API could compile TypeScript into a validated native manifest, but it is **not implemented**:
+
+~~~typescript
+// Concept only: this package cannot be imported yet.
 import { defineConfig } from "@bsis/core";
 
 export default defineConfig({
-  app: {
-    name: "Example App",
-    version: "1.0.0",
-    publisher: "Example Studio",
-  },
-  installer: {
-    ui: "./installer-ui",
-    scope: "user",
-    compression: "balanced",
-  },
+  app: { name: "Example App", version: "1.0.0" },
   files: [{ from: "./dist", to: "{installDir}" }],
-  steps: ["welcome", "destination", "install", "finish"],
+  ui: "./installer",
 });
-```
+~~~
 
-## Why consider TypeScript?
-
-Typed configuration could provide compile-time feedback, editor hints and modular plugins. The build tool could resolve that configuration into a small, versioned internal manifest before distributing any executable.
-
-**Plain JSON may still be supported.** A declarative format is useful for external tools, CI/CD integrations and users who do not want to execute configuration code.
-
-## What needs to be designed
-
-- A stable schema with versioning and forward-compatibility rules.
-- Explicit install scopes, destination path rules and component selection.
-- A clear distinction between build-time code and runtime actions.
-- Safe handling of secrets and signing keys: never embed build secrets in published installers.
-- Compatibility between installation, repair, update and uninstall metadata.
-
-Any real API will be documented here only after it is implemented and tested.
+Features from the original vision, such as custom wizard steps, appearance settings, shortcuts, elevation and update preservation, are **not supported keys** in the current Rust JSON schema.
