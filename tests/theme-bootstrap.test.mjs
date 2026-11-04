@@ -1,14 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { runInNewContext } from "node:vm";
-import { prepaintTheme } from "../src/lib/theme-bootstrap";
+import { prepaintTheme } from "../src/lib/theme-bootstrap.ts";
 
-// The static HTML starts in dark mode; the head script must correct it
-// synchronously before any browser paint, with no React involved.
-function bootstrap(saved: string | null, prefersDark: boolean, storageThrows = false) {
+function bootstrap(saved, prefersDark, storageThrows = false) {
+  // Simulate the server-rendered root starting in dark mode.
   const classes = new Set(["dark"]);
   const root = {
     classList: {
-      toggle: (name: string, enabled: boolean) => {
+      toggle: (name, enabled) => {
         if (enabled) classes.add(name);
         else classes.delete(name);
       },
@@ -30,20 +29,20 @@ function bootstrap(saved: string | null, prefersDark: boolean, storageThrows = f
   return { dark: classes.has("dark"), colorScheme: root.style.colorScheme };
 }
 
-describe("prepaint theme", () => {
-  test("restores dark preference even when OS is light", () => {
+describe("theme is ready before the first paint", () => {
+  test("stored dark beats system light", () => {
     expect(bootstrap("dark", false)).toEqual({ dark: true, colorScheme: "dark" });
   });
-  test("restores light preference even when OS is dark", () => {
+  test("stored light beats system dark", () => {
     expect(bootstrap("light", true)).toEqual({ dark: false, colorScheme: "light" });
   });
-  test("respects system dark when no preference is stored", () => {
+  test("follows system dark when unset", () => {
     expect(bootstrap(null, true)).toEqual({ dark: true, colorScheme: "dark" });
   });
-  test("respects system light when no preference is stored", () => {
+  test("follows system light when unset", () => {
     expect(bootstrap(null, false)).toEqual({ dark: false, colorScheme: "light" });
   });
-  test("still starts when browser storage is unavailable", () => {
+  test("works when storage is denied", () => {
     expect(bootstrap(null, true, true)).toEqual({ dark: true, colorScheme: "dark" });
   });
 });

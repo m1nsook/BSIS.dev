@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Command, Search, X } from "lucide-react";
 import type { DocsSearchEntry } from "@/lib/docs-search-index";
