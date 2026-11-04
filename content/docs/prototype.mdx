@@ -52,7 +52,9 @@ To open the folder in Windows Explorer, press Win+R and paste `%LOCALAPPDATA%\Pr
 
 The example contains only `hello.txt` to verify the install/uninstall pipeline. **No desktop icon, Start Menu shortcut or app launcher is installed** yet. An **existing empty folder is now accepted**, but a folder containing files is deliberately rejected. The interactive installer explains the problem and asks for another folder rather than proceeding. The prototype does not overwrite existing files or repair installations.
 
-The completion summary shows the actual destination and a command to uninstall it. The Setup.exe you used is required to uninstall through that command.
+The completion summary shows the actual destination and a **PowerShell-compatible** uninstall command. The new command begins with `&`, because PowerShell requires the call operator before a quoted executable path. The same Setup.exe is required for uninstalling; it is not yet installed or registered separately.
+
+**Extract the GitHub Actions ZIP before running Setup.exe.** Opening the EXE directly inside a ZIP may launch it from a temporary extraction directory, which can disappear after closing. The installer now warns about temporary locations. Save Setup.exe to a permanent folder for the uninstall command.
 
 ## Choosing an existing folder
 
