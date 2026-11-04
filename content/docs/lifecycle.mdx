@@ -18,9 +18,11 @@ An installation writes a native `Uninstall.exe` and a `.bsis-receipt.json` recor
 1. **Validate input.** Reject invalid manifest entries, unsafe Windows destination names, linked source paths and unsupported installation targets.
 2. **Choose destination.** Accept only a new or existing empty directory. Nonempty folders are rejected; there is no in-place upgrade or repair.
 3. **Stage alongside the target.** Extract into a temporary sibling directory so the target is not partially populated while decompressing.
-4. **Verify content.** Check extracted file sizes and SHA-256 digests, and write the managed uninstaller and receipt.
+4. **Verify content.** While extracting, report staged bytes every MiB and check for cancellation during large files. A file is counted as verified only after its full size and SHA-256 digest match. Write the managed uninstaller and receipt after verifying all payload files.
 5. **Commit.** Rename the verified stage to the final destination. If the destination was an existing empty directory, temporarily move it aside and restore it when commit fails.
 6. **Report outcome.** The console or GUI shows success only after the Rust installation call completes.
+
+Progress distinguishes `written_bytes` (currently extracted, potentially unverified data) from `completed_bytes` (verified files only). A cancellation callback before commit discards staging, including partially written large files, without overwriting the destination. Completion never means merely reaching 100% of extracted bytes.
 
 This is a staged commit, **not** a fully transactional installer. It does not guarantee recovery from power loss, arbitrary concurrent filesystem mutations, antivirus locks or process termination at every instruction.
 

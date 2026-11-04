@@ -69,7 +69,7 @@ The cause was attempting to remove the directory containing the running `Uninsta
 
 ## Cancel installation does not close the window immediately
 
-During extraction, **Cancel installation** requests a safe stop instead of force-closing the application. Rust checks this request between verified files and immediately before the staged directory commit. This may take time for large files, but incomplete staging data is discarded and no partial installation is committed.
+During extraction, **Cancel installation** requests a safe stop instead of force-closing the application. Rust checks the request after approximately every MiB written within a large file, again between verified files, and immediately before the staged directory commit. Slow disk writes can still delay acknowledgement, but incomplete staging data is discarded and no partial installation is committed.
 
 Once an installation is successfully committed, use Uninstall.exe to remove it. The cancellation button is not an uninstall function or an update rollback.
 

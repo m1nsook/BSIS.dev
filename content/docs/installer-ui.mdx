@@ -13,7 +13,9 @@ The BSIS installer runtime now offers a **WebView2-based graphical window** as a
 
 The experimental GUI shows the real embedded product name, version, publisher and file count, allows the installation destination to be changed, performs installation through the same native Rust engine used by the console installer, and displays completion or a readable failure.
 
-The graphical installer now shows **real file-level progress** from the Rust core: verified file count, total files, byte counts and the latest verified path. A finalization stage follows extraction. The completion state is only emitted after the staged installation has successfully committed. Progress is file-level, not a prediction of time remaining or chunk-level streaming progress. The header and footer stay visible; only the main content scrolls on smaller windows.
+The graphical installer now shows **streaming byte-level extraction progress** from the Rust core. It emits updates after each additional MiB written within a large file, while the verified-file counter only advances after a file passes SHA-256 verification. A separate finalization stage follows extraction. The progress bar is capped at **99% until the staged directory is committed**; only a successful commit emits the completed event and 100%.
+
+This is measured extraction progress, not a download estimate or predicted time remaining. The UI reports both bytes written to private staging and the count of fully verified files. The header and footer stay visible; only the main content scrolls on smaller windows.
 
 ## Try it on Windows
 
@@ -43,9 +45,9 @@ Double-clicking the native Uninstall.exe without arguments continues to show its
 
 Once you select **Install now**, the **Cancel installation** button remains available while the Rust installer is working. It sends a limited cancellation message to the native host rather than killing the process.
 
-Cancellation is cooperative: Rust checks for it between verified files and immediately before committing the staged directory. If the request is acknowledged before commit, **temporary installation files are discarded** and no target application is installed. A pre-existing empty destination stays empty.
+Cancellation is cooperative: Rust checks for it approximately every **1 MiB of extraction within the current file**, at the end of each fully verified file, and immediately before committing the staged directory. If the request is acknowledged before commit, **temporary installation files are discarded** and no target application is installed. A pre-existing empty destination stays empty.
 
-If one very large file is currently being unpacked, the cancellation request may be acknowledged only after that file finishes verification. This first implementation does not stop an individual file in the middle of decompression, nor does it support resuming.
+Even within one large file, BSIS can now stop extraction before that file finishes. A slow or blocked filesystem operation can still delay the response; cancellation does not interrupt an OS write in progress. This is safe pre-commit cancellation, **not** resumable installation or post-commit rollback.
 
 **Important:** Once the staged installation has been committed, cancellation cannot undo the completed application installation. Use the native uninstaller for removal after success.
 
@@ -83,7 +85,7 @@ The installation HTML screen cannot ask the Rust core to execute an arbitrary co
 
 The uninstaller has a **separate** IPC handler that accepts only `uninstall` and `close`, with no path parameters. The core discovers the removal directory from the installed executable’s own location and validates the receipt before deleting files.
 
-Installation runs on a worker thread so the UI remains responsive. **Native progress events** are sent from the core to the window's event loop for safe rendering as a progress bar and text status. The UI receives event data but cannot invoke arbitrary Rust commands. Errors or final results are returned to the main UI thread and displayed as text, not injected HTML.
+Installation runs on a worker thread so the UI remains responsive. **Native progress events** are sent from the core to the window's event loop for safe rendering as a progress bar and text status. The `written_bytes` field counts bytes written into the private stage, which are **not verified until the current file finishes**. `completed_bytes` and `completed_files` count only SHA-256-verified content. The UI receives event data but cannot invoke arbitrary Rust commands. Errors or final results are returned to the main UI thread and displayed as text, not injected HTML.
 
 This is an **initial boundary**, not yet a complete security review. Future custom developer UI requires stricter permissions, navigation policy, event schemas and trust rules.
 
@@ -93,7 +95,7 @@ The following are **not yet implemented**:
 
 - Svelte/React project-provided installer screens and reusable UI components.
 - A shared step engine for welcome, license, components, progress and success.
-- Chunk-level cancellation, resumable installation and general-purpose rollback after commit (cooperative pre-commit cancellation now exists).
+- Resumable installation, interruption of blocked OS I/O and general-purpose rollback after commit (MiB-granular pre-commit cancellation now exists).
 - Native directory picker and richer accessibility testing.
 - Automatic GUI-on-double-click and a documented fallback for missing WebView2.
 - A **Windows-registered** uninstaller and Apps & Features entry (an unregistered installed Uninstall.exe now exists).

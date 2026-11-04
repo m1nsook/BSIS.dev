@@ -106,7 +106,7 @@ The `--yes` option skips confirmation. It does **not** mean that updates, unatte
 | `gui` | Normal installer without right-click browser menus, Inspect Element or browser shortcuts |
 | `gui --dev` | Enable browser context menu, Inspect Element and browser shortcuts for UI debugging |
 
-This command launches a bundled offline HTML/CSS wizard. Enter a new or empty folder and select **Install now**. The progress bar uses **real native verified-file events**, and the finalization phase is distinct from completed installation. The GUI calls the same validated Rust installation function as console mode and displays the result. **No-argument Setup.exe still starts console mode.**
+This command launches a bundled offline HTML/CSS wizard. Enter a new or empty folder and select **Install now**. The progress bar uses **real native streamed-byte events**, distinguishes in-flight bytes from SHA-256-verified file counts, and stays below 100% until after the commit. The finalization phase is distinct from completed installation. The GUI calls the same validated Rust installation function as console mode and displays the result. **No-argument Setup.exe still starts console mode.**
 
 This command is **not available on Linux** and does not bundle the WebView2 Runtime. The installed `Uninstall.exe` does not contain a package payload: `Uninstall.exe gui` opens its **own receipt-verified removal wizard**, not the installer wizard. See [Installer UI](./installer-ui/) for requirements, supported interactions and missing features.
 
