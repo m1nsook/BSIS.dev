@@ -75,6 +75,16 @@ The version 1 manifest accepts only `schema_version`, `product` and `files` with
 
 Source mappings must use relative paths, and installation destinations must pass Windows path validation. See [Configuration](./configuration/).
 
+## Diagnose modified or missing tracked files
+
+Run a non-destructive integrity report before uninstalling:
+
+~~~powershell
+.\BSIS-Hello-Setup.exe verify --target "$env:LOCALAPPDATA\Programs\bsis.hello" --json
+~~~
+
+The result lists any missing, modified, unsafe or unreadable paths. The command does **not** repair files, remove user content or re-create the receipt. If the receipt is missing or invalid, verification fails rather than treating an arbitrary directory as an installation.
+
 ## Uninstall refuses to delete a modified file
 
 BSIS compares the current installed files with the hashes stored in `.bsis-receipt.json`. If a tracked file differs, uninstall stops **before deleting any tracked file**. This protects against accidental data loss. Preserve the modified file and review the installation; do not manually forge a receipt to force deletion.

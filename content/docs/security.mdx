@@ -19,9 +19,12 @@ The BSIS installer performs sensitive filesystem operations. The initial Rust pr
 | Commit | Renames the completed stage to a new target after verification |
 | Existing installs | Accepts a new or existing empty directory, but refuses to overwrite a nonempty target |
 | Uninstall | Validates the receipt and hashes, including managed Uninstall.exe, before deleting tracked files |
+| Verification | Read-only drift report, JSON output and failure exit code on mismatch |
 | Source input | Rejects unsupported links and reparse points during packaging |
 
 The prototype also caps manifest size, file count and total declared payload size. These limits are not a promise that every large package will work on every Windows system.
+
+The [verification CLI](./verification/) can identify missing, modified and unsafe tracked files without attempting an uninstall.
 
 ## Checksums are not signatures
 

@@ -40,6 +40,10 @@
     "title": "CLI reference"
   },
   {
+    "slug": "verification",
+    "title": "Verify installations"
+  },
+  {
     "slug": "security",
     "title": "Security model"
   },

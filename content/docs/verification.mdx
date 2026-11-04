@@ -1,0 +1,57 @@
+---
+title: Verify installations
+description: Read-only receipt and SHA-256 integrity checks for installed applications.
+---
+
+<Callout type="warning" title="Experimental private CLI">
+  The verify command is part of the private Rust prototype. It is an integrity report, not a publisher-authentication system or automatic repair tool.
+</Callout>
+
+## Why verify?
+
+Before troubleshooting a broken installation or attempting an uninstall, developers can inspect the files BSIS originally recorded. Verification **reads files without modifying them**. It checks tracked payloads and the installed Uninstall.exe, if recorded in the receipt.
+
+## Commands
+
+~~~powershell title="PowerShell · readable output"
+.\BSIS-Hello-Setup.exe verify --target "$env:LOCALAPPDATA\Programs\bsis.hello"
+~~~
+
+~~~powershell title="PowerShell · JSON for CI and support"
+.\BSIS-Hello-Setup.exe verify --target "$env:LOCALAPPDATA\Programs\bsis.hello" --json
+~~~
+
+The required `--target` must be an absolute path to a real BSIS installation containing `.bsis-receipt.json`. You can also invoke verify using the native BSIS builder or installed Uninstall.exe.
+
+## Report format
+
+| Field | Description |
+| --- | --- |
+| `product` | Product ID, version, name and publisher from the receipt |
+| `location` | Installation folder being checked |
+| `expected_files` | Number of tracked files, including Uninstall.exe if recorded |
+| `verified_files` | Files whose current size and SHA-256 match |
+| `issues` | List of file paths and issue kinds |
+
+An issue is classified as one of:
+
+- `missing` — a tracked file is absent.
+- `modified` — the hash or size differs, or a tracked file became a directory.
+- `unsafe_path` — a linked or reparse-point path was encountered and will not be followed.
+- `unreadable` — the filesystem prevented checking a file.
+
+The operation reports multiple problems in one pass, rather than stopping at the first modified file.
+
+## Exit status
+
+A clean installation exits with success. **Any reported issue returns a nonzero exit code after printing the report.** An invalid/missing receipt or unsafe root also fails.
+
+Do not delete user files or overwrite a receipt just to obtain a clean result. Investigate and back up data first.
+
+## Trust boundaries
+
+Checksums come from the **local unsigned receipt**. They reveal drift relative to that receipt, but someone who can rewrite both the receipt and the files can forge a clean report.
+
+Verification is not Ed25519 update-signature validation, Windows Authenticode verification, a malware scanner, automatic repair or complete defense against hostile filesystem races.
+
+See [Security model](./security/), [Installer lifecycle](./lifecycle/) and [Uninstaller](./uninstall/).
