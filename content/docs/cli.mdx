@@ -15,6 +15,7 @@ BSIS uses one Rust executable as both a developer build tool (before packaging) 
 | --- | --- | --- |
 | `build` | Embed files into a standalone Windows executable | Unbundled builder |
 | `inspect` | Validate and list the packaged files | Builder or packaged setup |
+| `gui` | Launch the experimental offline HTML/CSS wizard | Packaged setup on Windows with WebView2 |
 | `install` | Install to a new destination | Packaged setup |
 | `uninstall` | Remove only verified, tracked installed files | Packaged setup |
 
@@ -30,7 +31,7 @@ cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/re
 | `--runtime <path>` | Yes | Unbundled Windows PE executable to package |
 | `--output <path>` | Yes | Path for the generated setup executable |
 
-See [Configuration](./configuration/) for the supported JSON fields. The builder appends the Zstandard-compressed payload to the provided runtime; it does not generate a GUI.
+See [Configuration](./configuration/) for the supported JSON fields. The builder appends the Zstandard-compressed payload to the provided runtime. The runtime now contains a **fixed opt-in WebView2 GUI**; it does not yet compile developer-supplied HTML/Svelte/React screens.
 
 ## Inspect
 
@@ -62,6 +63,16 @@ Inspect validates the embedded bundle and prints product information, the file c
 With no target, BSIS proposes a per-user destination under `%LOCALAPPDATA%\Programs\<product.id>`. Running the packaged executable **without arguments** starts an interactive console prompt to choose the destination and confirm.
 
 The `--yes` option skips confirmation. It does **not** mean that updates, unattended GUI workflows or privileged installation are implemented.
+
+## Graphical installer preview
+
+~~~powershell title="PowerShell · requires Windows and WebView2 Runtime"
+.\BSIS-Hello-Setup.exe gui
+~~~
+
+This command launches a bundled offline HTML/CSS wizard. Enter a new or empty folder and select **Install now**. The GUI calls the same validated Rust installation function as console mode and displays the result. **No-argument Setup.exe still starts console mode.**
+
+This command is **not available on Linux** and does not bundle the WebView2 Runtime. See [Installer UI](./installer-ui/) for the requirements, supported interactions and missing features.
 
 ## Uninstall
 

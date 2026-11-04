@@ -6,7 +6,7 @@ description: A modern installer framework for Windows, powered by an experimenta
 BSIS (**Better NSIS**) explores a design-first way to build Windows installers. The long-term goal is to let developers design installation interfaces using familiar UI technologies, with a native engine handling packaging and installation operations.
 
 <Callout type="warning" title="Experimental prototype">
-  BSIS core is private during development and has no public installer release or stable SDK. The Rust prototype supports file packaging, console installation, inspection and cautious uninstall. Custom GUIs, plugins, repair and updates are still planned.
+  BSIS core is private during development and has no public installer release or stable SDK. The Rust prototype supports file packaging, console installation, inspection, cautious uninstall, and an **opt-in WebView2 GUI preview**. Project-supplied custom GUIs, plugins, repair and updates are still planned.
 </Callout>
 
 ## Start building
@@ -28,7 +28,7 @@ BSIS (**Better NSIS**) explores a design-first way to build Windows installers. 
 
 ## A small, working prototype
 
-The following commands are implemented for maintainers with access to the private repository. They build a standalone setup executable, inspect its embedded Zstandard bundle and install it to a **new** directory.
+The following commands are implemented for maintainers with access to the private repository. They build a standalone setup executable, inspect its embedded Zstandard bundle and install it to a **new or existing empty** directory.
 
 <Tabs items={["Build", "Inspect", "Install"]}>
 <Tab value="Build">
@@ -67,14 +67,14 @@ The current experiment:
 - Validates a strict versioned JSON build manifest.
 - Appends a Zstandard-compressed payload to a native Windows executable.
 - Verifies bundle and extracted file hashes with SHA-256.
-- Uses a temporary staging directory before committing a **new** installation.
+- Uses a temporary staging directory before committing a **new or existing empty-folder** installation.
 - Writes a receipt and refuses to uninstall modified tracked files.
 
 Read [Packaging](./packaging/) and [Rust prototype](./prototype/) for implementation details.
 
 ## Where BSIS is headed
 
-The planned architecture includes customizable graphical installer UI, interactive terminal mode, more compression options, automation-friendly silent workflows, Windows integrations, safe extension points, and eventually updates and repair. These features are **not implemented** in the current prototype.
+A fixed HTML/CSS WebView2 GUI preview is available via `Setup.exe gui`, but developer-customizable screens are **not implemented** yet. Other proposals include a shared step engine, more compression options, Windows integration, safe extensions, and updates/repair.
 
 Explore the [Architecture](./architecture/), [Installer UI](./installer-ui/) and [Roadmap](./roadmap/) for future milestones.
 
