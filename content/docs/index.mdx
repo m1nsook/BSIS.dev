@@ -1,45 +1,83 @@
 ---
 title: BSIS documentation
-description: A practical guide to the Better NSIS installer framework and its experimental Rust core.
+description: A modern installer framework for Windows, powered by an experimental Rust core.
 ---
 
-BSIS (**Better NSIS**) is a design-first Windows installer framework in early development. Its goal is to let developers build a custom installation experience while a native engine handles packaging and filesystem operations.
+BSIS (**Better NSIS**) explores a design-first way to build Windows installers. The long-term goal is to let developers design installation interfaces using familiar UI technologies, with a native engine handling packaging and installation operations.
 
-> **Status: experimental prototype, not a public release.** The core repository is currently private. The existing Rust code can build, inspect, install and uninstall simple offline packages. UI customization, plugins and updates are plans, not released features.
+<Callout type="warning" title="Experimental prototype">
+  BSIS core is private during development and has no public installer release or stable SDK. The Rust prototype supports file packaging, console installation, inspection and cautious uninstall. Custom GUIs, plugins, repair and updates are still planned.
+</Callout>
 
-## Choose your starting point
+## Start building
 
-| I want to… | Read |
-| --- | --- |
-| Understand the project and its current availability | [Getting started](./getting-started/) |
-| Build the proof-of-concept installer on Windows | [Rust prototype](./prototype/) |
-| Look up actual executable commands and flags | [CLI reference](./cli/) |
-| Package an app using the current JSON format | [Configuration](./configuration/) |
-| Understand the embedded payload and compression | [Packaging](./packaging/) |
-| Review safety boundaries before testing | [Security model](./security/) |
-| See what BSIS might become | [Architecture](./architecture/) and [roadmap](./roadmap/) |
+<Cards>
+  <Card title="Getting started" href="./getting-started/">
+    Requirements and a complete Windows build, install and uninstall workflow.
+  </Card>
+  <Card title="Configuration" href="./configuration/">
+    Learn the actual version 1 JSON manifest and its validation rules.
+  </Card>
+  <Card title="CLI reference" href="./cli/">
+    Exact Rust commands, arguments and expected behavior.
+  </Card>
+  <Card title="Security model" href="./security/">
+    Understand integrity checks, safe uninstall and current limitations.
+  </Card>
+</Cards>
 
-## What works today
+## A small, working prototype
 
-The initial Rust proof of concept implements a self-contained Windows `Setup.exe` with a Zstandard-compressed file payload.
+The following commands are implemented for maintainers with access to the private repository. They build a standalone setup executable, inspect its embedded Zstandard bundle and install it to a **new** directory.
 
-- A strict, versioned JSON build manifest and relative file mappings.
-- A Rust builder that appends the compressed payload to a Windows executable.
-- A console runtime with interactive confirmation and a `--yes` automation flag.
-- Integrity checks for the bundle and extracted files using SHA-256.
-- Installation into a **new directory**, using a staging directory before committing files.
-- A receipt-based uninstall that refuses to delete modified tracked files.
+<Tabs items={["Build", "Inspect", "Install"]}>
+<Tab value="Build">
 
-These capabilities are still being hardened and may change without compatibility guarantees.
+~~~powershell title="PowerShell · build"
+cargo test --workspace --all-targets
+cargo build --release -p bsis
+cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
+~~~
 
-## What's planned
+</Tab>
+<Tab value="Inspect">
 
-Graphical installers built with web UI technologies, richer terminal experiences, silent deployment profiles, compression presets, safe Windows system integration, plugins, repair, and update workflows are **not yet implemented**.
+~~~powershell title="PowerShell · inspect"
+.\BSIS-Hello-Setup.exe inspect
+~~~
 
-See [Installer UI](./installer-ui/), [Plugins](./plugins/) and [Roadmap](./roadmap/) for design direction and priorities.
+</Tab>
+<Tab value="Install">
+
+~~~powershell title="PowerShell · install"
+.\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+</Tab>
+</Tabs>
+
+<Callout type="tip" title="No runtime download at install time">
+  A successfully built BSIS setup executable contains its Rust runtime and compressed payload. Running it does not require installing Node.js or Bun on the target computer.
+</Callout>
+
+## How it works today
+
+The current experiment:
+
+- Validates a strict versioned JSON build manifest.
+- Appends a Zstandard-compressed payload to a native Windows executable.
+- Verifies bundle and extracted file hashes with SHA-256.
+- Uses a temporary staging directory before committing a **new** installation.
+- Writes a receipt and refuses to uninstall modified tracked files.
+
+Read [Packaging](./packaging/) and [Rust prototype](./prototype/) for implementation details.
+
+## Where BSIS is headed
+
+The planned architecture includes customizable graphical installer UI, interactive terminal mode, more compression options, automation-friendly silent workflows, Windows integrations, safe extension points, and eventually updates and repair. These features are **not implemented** in the current prototype.
+
+Explore the [Architecture](./architecture/), [Installer UI](./installer-ui/) and [Roadmap](./roadmap/) for future milestones.
 
 ## Documentation conventions
 
-This site distinguishes **Implemented** (present in the Rust prototype), **Experimental** (working but not production-ready), and **Proposed** (design work only). Snippets marked *concept only* must not be treated as working BSIS APIs.
-
-Use the search box or `Ctrl+K` to find pages, flags and configuration fields.
+Features marked **Implemented** are present in current private Rust source; **Experimental** means not production-ready; **Proposed** identifies ideas rather than supported APIs. Use sidebar search or `Ctrl+K` to find examples.

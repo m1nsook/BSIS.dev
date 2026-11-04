@@ -145,13 +145,31 @@
    AriaDocs otherwise centers a 90rem shell, leaving a wide empty gutter
    between the site header and the sidebar on large desktops. */
 .bsis-docs-shell {
+  --aria-header-height: 0px;
   --aria-docs-max-width: 100%;
   --aria-sidebar-width: 17rem;
   --aria-toc-width: 16rem;
-  min-height: calc(100svh - var(--aria-header-height));
+  min-height: 100dvh;
   background: var(--background);
 }
 
 .bsis-docs-shell :where(a) {
   text-underline-offset: 3px;
+}
+
+
+/* Copy affordances must be discoverable without hovering on touch devices. */
+.bsis-docs-shell [data-slot="pre"] [data-slot="copy-button"] {
+  opacity: 1;
+}
+
+/* Prevent the sidebar and markdown pre blocks from growing the viewport. */
+.bsis-docs-shell [data-slot="docs-layout"] {
+  min-width: 0;
+}
+.bsis-docs-shell [data-slot="docs-page"] {
+  min-width: 0;
+}
+.bsis-docs-shell [data-slot="docs-page-content"] pre {
+  overflow-x: auto;
 }

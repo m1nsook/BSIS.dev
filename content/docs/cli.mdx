@@ -3,7 +3,9 @@ title: CLI reference
 description: The implemented build, inspect, install and uninstall commands in BSIS v0.1.0.
 ---
 
-> **Experimental.** These commands are implemented in the current private Rust prototype. They are not a stable public API or published binary.
+<Callout type="warning" title="Experimental CLI">
+  These commands exist in the current private Rust prototype. They are not a stable public API or published binary.
+</Callout>
 
 BSIS uses one Rust executable as both a developer build tool (before packaging) and the console runtime of a packaged setup executable.
 
@@ -18,7 +20,7 @@ BSIS uses one Rust executable as both a developer build tool (before packaging) 
 
 ## Build
 
-~~~powershell
+~~~powershell title="PowerShell"
 cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
 ~~~
 
@@ -32,13 +34,13 @@ See [Configuration](./configuration/) for the supported JSON fields. The builder
 
 ## Inspect
 
-~~~powershell
+~~~powershell title="PowerShell"
 .\BSIS-Hello-Setup.exe inspect
 ~~~
 
 Inspect validates the embedded bundle and prints product information, the file count, compressed size and file paths. When run on an unbundled builder, you can inspect a different setup executable:
 
-~~~powershell
+~~~powershell title="PowerShell"
 .\target\release\bsis.exe inspect --bundle .\BSIS-Hello-Setup.exe
 ~~~
 
@@ -48,7 +50,7 @@ Inspect validates the embedded bundle and prints product information, the file c
 
 ## Install
 
-~~~powershell
+~~~powershell title="PowerShell"
 .\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 ~~~
 
@@ -63,7 +65,7 @@ The `--yes` option skips confirmation. It does **not** mean that updates, unatte
 
 ## Uninstall
 
-~~~powershell
+~~~powershell title="PowerShell"
 .\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 ~~~
 

@@ -3,7 +3,9 @@ title: Getting started
 description: Requirements, a tested prototype workflow and links to deeper guides.
 ---
 
-> **Private maintainer preview.** BSIS has no public CLI package, downloadable setup builder or stable SDK. The steps below require access to the private BSIS source repository.
+<Callout type="warning" title="Private maintainer preview">
+  BSIS has no public CLI package, downloadable setup builder or stable SDK. The commands below require private source access.
+</Callout>
 
 ## Requirements
 
@@ -18,7 +20,7 @@ Bun and Node.js are **not required on the target PC** to run a compiled BSIS Win
 
 From the root of the private repository:
 
-~~~powershell
+~~~powershell title="PowerShell · compile"
 cargo test --workspace --all-targets
 cargo build --release -p bsis
 ~~~
@@ -27,7 +29,7 @@ cargo build --release -p bsis
 
 The example project includes `examples/hello/bsis.json` and a small payload.
 
-~~~powershell
+~~~powershell title="PowerShell · package"
 cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
 ~~~
 
@@ -35,7 +37,7 @@ The generated `BSIS-Hello-Setup.exe` contains both the Windows runtime and compr
 
 ## 3. Inspect and install
 
-~~~powershell
+~~~powershell title="PowerShell · install"
 .\BSIS-Hello-Setup.exe inspect
 .\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"
@@ -45,7 +47,7 @@ The target must not already exist. The console installer prints an error rather 
 
 ## 4. Uninstall
 
-~~~powershell
+~~~powershell title="PowerShell · uninstall"
 .\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 ~~~
 

@@ -1,47 +1,20 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Code2, Moon, Sun } from "lucide-react";
-import { DocsSearch } from "@/components/docs-search";
-import type { DocsSearchEntry } from "@/lib/docs-search-index";
+import { BookOpen, Code2 } from "lucide-react";
+import { DocsSearchButton } from "@/components/docs-search";
+import { ThemeToggle } from "@/components/theme-controls";
 
-function getDarkTheme(): boolean {
-  const saved = window.localStorage.getItem("bsis-theme");
-  return saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-}
-
-function subscribeToTheme(onChange: () => void): () => void {
-  const preference = window.matchMedia("(prefers-color-scheme: dark)");
-  window.addEventListener("storage", onChange);
-  window.addEventListener("bsis-theme-change", onChange);
-  preference.addEventListener("change", onChange);
-  return () => {
-    window.removeEventListener("storage", onChange);
-    window.removeEventListener("bsis-theme-change", onChange);
-    preference.removeEventListener("change", onChange);
-  };
-}
-
-export function SiteHeader({ searchEntries }: { searchEntries: DocsSearchEntry[] }) {
+/** The marketing homepage header. Docs use their own AriaDocs-style left sidebar. */
+export function SiteHeader() {
   const pathname = usePathname();
-  const dark = useSyncExternalStore(subscribeToTheme, getDarkTheme, () => false);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-
-  function toggleTheme() {
-    window.localStorage.setItem("bsis-theme", dark ? "light" : "dark");
-    window.dispatchEvent(new Event("bsis-theme-change"));
-  }
-
   const isDocs = pathname === "/docs" || pathname.startsWith("/docs/");
   const isReference = pathname === "/reference" || pathname.startsWith("/reference/");
+  if (isDocs || isReference) return null;
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border/80 bg-background/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center border-b border-border/80 bg-background/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
       <Link href="/docs" className="flex min-w-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
         <span aria-hidden="true" className="flex size-9 items-center justify-center rounded-lg border border-border bg-foreground text-sm font-bold tracking-tight text-background">B</span>
         <span className="flex flex-col leading-tight">
@@ -49,23 +22,16 @@ export function SiteHeader({ searchEntries }: { searchEntries: DocsSearchEntry[]
           <span className="text-[11px] text-muted-foreground">Documentation</span>
         </span>
       </Link>
-      <nav aria-label="Primary navigation" className="ml-3 flex items-center gap-0.5 sm:ml-7 sm:gap-1">
-        <Link href="/docs" aria-current={isDocs ? "page" : undefined} className={"inline-flex h-9 items-center gap-2 rounded-md px-2.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm " + (isDocs ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/70 hover:text-foreground")}>
-          <BookOpen aria-hidden="true" className="size-4" />
-          <span className="hidden sm:inline">Guides</span>
+      <nav aria-label="Primary navigation" className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        <Link href="/docs" className="inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <BookOpen aria-hidden="true" className="size-4" /><span>Guides</span>
         </Link>
-        <Link href="/reference" aria-current={isReference ? "page" : undefined} className={"inline-flex h-9 items-center gap-2 rounded-md px-2.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm " + (isReference ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/70 hover:text-foreground")}>
-          <Code2 aria-hidden="true" className="size-4" />
-          <span className="hidden sm:inline">Reference</span>
+        <Link href="/reference" className="inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+          <Code2 aria-hidden="true" className="size-4" /><span className="hidden sm:inline">Reference</span>
         </Link>
+        <DocsSearchButton compact />
+        <ThemeToggle />
       </nav>
-      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-        <DocsSearch entries={searchEntries} />
-        <span className="h-5 w-px bg-border" aria-hidden="true" />
-        <button type="button" onClick={toggleTheme} aria-label={dark ? "Use light theme" : "Use dark theme"} title={dark ? "Use light theme" : "Use dark theme"} className="inline-flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-          {dark ? <Sun aria-hidden="true" className="size-4" /> : <Moon aria-hidden="true" className="size-4" />}
-        </button>
-      </div>
     </header>
   );
 }
