@@ -13,7 +13,7 @@ The BSIS installer runtime now offers a **WebView2-based graphical window** as a
 
 The experimental GUI shows the real embedded product name, version, publisher and file count, allows the installation destination to be changed, performs installation through the same native Rust engine used by the console installer, and displays completion or a readable failure.
 
-The screen currently has an **indeterminate** installation indicator — it does not provide per-file progress percentages. The header and footer stay visible; only the main content scrolls on smaller windows or when completion details are long.
+The graphical installer now shows **real file-level progress** from the Rust core: verified file count, total files, byte counts and the latest verified path. A finalization stage follows extraction. The completion state is only emitted after the staged installation has successfully committed. Progress is file-level, not a prediction of time remaining or chunk-level streaming progress. The header and footer stay visible; only the main content scrolls on smaller windows.
 
 ## Try it on Windows
 
@@ -58,7 +58,7 @@ The HTML screen cannot ask the Rust core to execute an arbitrary command. The pr
 | \`install\` | Pass a destination to the same validated Rust installation engine |
 | \`close\` | Close the window, unless installation is in progress |
 
-Installation runs on a worker thread so the UI remains responsive. Results are returned to the main UI thread, and messages are displayed as text rather than injected as HTML.
+Installation runs on a worker thread so the UI remains responsive. **Native progress events** are sent from the core to the window's event loop for safe rendering as a progress bar and text status. The UI receives event data but cannot invoke arbitrary Rust commands. Errors or final results are returned to the main UI thread and displayed as text, not injected HTML.
 
 This is an **initial boundary**, not yet a complete security review. Future custom developer UI requires stricter permissions, navigation policy, event schemas and trust rules.
 
@@ -68,7 +68,7 @@ The following are **not yet implemented**:
 
 - Svelte/React project-provided installer screens and reusable UI components.
 - A shared step engine for welcome, license, components, progress and success.
-- Detailed progress events, cancellation and rollback.
+- Chunk-level progress, cancellation, resumable installation and general-purpose rollback (verified-file progress events now exist).
 - Native directory picker and richer accessibility testing.
 - Automatic GUI-on-double-click and a documented fallback for missing WebView2.
 - A **Windows-registered** uninstaller and Apps & Features entry (an unregistered installed Uninstall.exe now exists).
