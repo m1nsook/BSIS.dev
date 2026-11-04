@@ -57,7 +57,7 @@ Keep docs in sync with the private BSIS core repository. The implemented Rust CL
 
 ## AriaDocs presentation components
 
-The documentation uses the package's `Pre` for highlighted, copyable fenced-code blocks. Its demo-like `Tabs` / `Tab`, `Callout`, and `Cards` / `Card` MDX components are registered in `src/components/mdx-components.tsx`.
+The documentation uses `MdxPre` for styled, language-labeled and copyable fenced-code blocks. The `rehypeCodeMeta` plugin attaches optional code titles to the same block, rather than rendering a detached title above it; long lines wrap instead of producing a horizontal scrollbar. Its demo-like `Tabs` / `Tab`, `Callout`, and `Cards` / `Card` MDX components are registered in `src/components/mdx-components.tsx`.
 
 Write a language after the code fence marker for syntax highlighting, and optionally add `title="example.ps1"` to display a code-file header. Copy buttons are available on every fenced code block.
 

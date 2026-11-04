@@ -1,10 +1,10 @@
 import { createDocs } from "@ariadocs/mdx";
 import { mdxComponents } from "@/components/mdx-components";
+import { rehypeCodeMeta } from "@/lib/rehype-code-meta";
 import {
   remarkGfm,
   rehypeSlug,
   rehypeAutolinkHeadings,
-  rehypeCodeTitles,
   rehypePrism,
   rehypeCodeRaw,
 } from "@ariadocs/mdx/plugins";
@@ -16,7 +16,7 @@ export const docs = createDocs({
   rehypePlugins: [
     rehypeSlug,
     rehypeAutolinkHeadings,
-    rehypeCodeTitles,
+    rehypeCodeMeta,
     rehypePrism,
     rehypeCodeRaw,
   ],
