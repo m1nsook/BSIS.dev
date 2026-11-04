@@ -14,7 +14,7 @@ The BSIS installer performs sensitive filesystem operations. The initial Rust pr
 | Manifest | Strict schema version 1; unknown JSON fields are rejected |
 | Paths | Rejects path traversal and invalid Windows destination names |
 | Package contents | Explicit file list with sizes and SHA-256 hashes |
-| Bundle integrity | Checks compressed payload digest before extraction |
+| Bundle integrity | Checks compressed payload digest; optional deep verification also hashes all embedded files against the manifest |
 | Extraction | Verifies each extracted file while writing to a staging directory |
 | Commit | Renames the completed stage to a new target after verification |
 | Existing installs | Accepts a new or existing empty directory, but refuses to overwrite a nonempty target |
@@ -25,6 +25,8 @@ The BSIS installer performs sensitive filesystem operations. The initial Rust pr
 The prototype also caps manifest size, file count and total declared payload size. These limits are not a promise that every large package will work on every Windows system.
 
 The [verification CLI](./verification/) can identify missing, modified and unsafe tracked files without attempting an uninstall.
+
+Deep bundle verification catches content that disagrees with the embedded manifest even if the outer compressed checksum has been recomputed. It does not authenticate an executable whose manifest and payload were both rewritten.
 
 ## Checksums are not signatures
 

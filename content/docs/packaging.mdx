@@ -45,7 +45,18 @@ cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/re
 .\BSIS-Hello-Setup.exe inspect
 ~~~
 
-The embedded manifest enumerates each file's relative path, byte length and SHA-256 checksum. The footer identifies the compressed stream and its digest. Inspection verifies bundle structure and digest.
+The embedded manifest enumerates each file's relative path, byte length and SHA-256 checksum. The footer identifies the compressed stream and its digest. Ordinary inspection checks that compressed digest and the manifest; optional deep inspection also verifies each uncompressed embedded file hash.
+
+## Deep verification without installing
+
+~~~powershell
+.\BSIS-Hello-Setup.exe inspect --deep
+.\BSIS-Hello-Setup.exe inspect --deep --json
+~~~
+
+This streams the full Zstandard payload and checks **every file** against its manifest SHA-256, including its declared size and absence of extra trailing data. It catches payload changes even if someone recomputes the outer compressed footer digest but leaves the manifest unchanged.
+
+No files are extracted or installed. Deep mode uses CPU to decompress the full package. A malicious actor able to change both the manifest and payload could create internally consistent checksums, so this is **not** publisher authentication.
 
 ## Extraction and commit
 
