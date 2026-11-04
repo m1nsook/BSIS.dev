@@ -4,7 +4,8 @@ import { useEffect, useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
 function isDark(): boolean {
-  const saved = window.localStorage.getItem("bsis-theme");
+  let saved: string | null = null;
+  try { saved = window.localStorage.getItem("bsis-theme"); } catch {}
   return saved === "dark" || (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 }
 
@@ -20,19 +21,25 @@ function subscribe(callback: () => void): () => void {
   };
 }
 
-/** Keeps theme persistence alive when the site header is not rendered on docs pages. */
+function applyTheme(dark: boolean) {
+  const root = document.documentElement;
+  root.classList.toggle("dark", dark);
+  root.style.colorScheme = dark ? "dark" : "light";
+}
+
+/** Synchronize later OS/cross-tab changes only. Initial paint is handled in <head>. */
 export function ThemeSync() {
-  const dark = useSyncExternalStore(subscribe, isDark, () => false);
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
+  useEffect(() => subscribe(() => applyTheme(isDark())), []);
   return null;
 }
 
 export function ThemeToggle({ segmented = false }: { segmented?: boolean }) {
   const dark = useSyncExternalStore(subscribe, isDark, () => false);
+
   function change(next: "light" | "dark") {
-    window.localStorage.setItem("bsis-theme", next);
+    // Apply first, synchronously. Don't rely on a post-hydration effect.
+    applyTheme(next === "dark");
+    try { window.localStorage.setItem("bsis-theme", next); } catch {}
     window.dispatchEvent(new Event("bsis-theme-change"));
   }
 

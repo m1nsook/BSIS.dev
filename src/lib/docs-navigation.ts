@@ -1,27 +1,42 @@
 import type { NavItem } from "@ariadocs/core";
 import { docs } from "@/lib/docs";
 
-// Keep URLs stable while giving the documentation a deliberate information architecture.
-const sections: { title: string; pages: string[] }[] = [
-  { title: "Start here", pages: ["", "getting-started", "prototype"] },
-  { title: "Guides", pages: ["configuration", "packaging", "installer-ui", "plugins"] },
-  { title: "Reference", pages: ["cli", "security", "troubleshooting"] },
-  { title: "Project", pages: ["architecture", "vision", "roadmap", "faq"] },
-];
-
+// Match AriaDocs' navigable hierarchy: a slim overview plus expandable
+// topic groups. Folder entries are presentation only, not fake routes.
 export async function getDocsNavigation(): Promise<NavItem[]> {
   const pages = await docs.getNavigation();
-  const byHref = new Map(pages.map((page) => [page.href.replace(/^\/+|\/+$/g, ""), page]));
-  return sections.map(({ title, pages: slugs }) => ({
-    title,
-    href: "",
+  const byHref = new Map(
+    pages.map((page) => [page.href.replace(/^\/+|\/+$/g, ""), page]),
+  );
+
+  function page(slug: string): NavItem[] {
+    const entry = byHref.get(slug);
+    return entry ? [entry] : [];
+  }
+
+  function folder(title: string, key: string, slugs: string[]): NavItem {
+    return {
+      title,
+      href: "/group/" + key,
+      nav: true,
+      props: {},
+      items: slugs.flatMap(page),
+    };
+  }
+
+  return [{
+    title: "Documentation",
+    href: "/group/documentation",
     nav: true,
     props: {},
-    items: slugs.flatMap((slug) => {
-      const entry = byHref.get(slug);
-      return entry ? [entry] : [];
-    }),
-  }));
+    items: [
+      ...page(""),
+      folder("Getting started", "getting-started", ["getting-started", "prototype"]),
+      folder("Guides", "guides", ["configuration", "packaging", "installer-ui", "plugins"]),
+      folder("Reference", "reference", ["cli", "security", "troubleshooting"]),
+      folder("Project", "project", ["architecture", "vision", "roadmap", "faq"]),
+    ],
+  }];
 }
 
 export function flattenDocsNavigation(items: NavItem[]): NavItem[] {

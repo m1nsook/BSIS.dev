@@ -28,6 +28,8 @@ jobs:
         run: bun run lint
       - name: Type-check
         run: bunx tsc --noEmit
+      - name: Theme regression tests
+        run: bun test
       - name: Export static site
         run: bun run build
         env:
