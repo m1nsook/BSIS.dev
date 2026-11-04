@@ -11,12 +11,23 @@ description: The implemented version 1 JSON build manifest, validation rules and
 
 Create `bsis.json` beside a folder named `payload`:
 
-~~~text
-hello/
-├── bsis.json
-└── payload/
-    └── hello.txt
-~~~
+<FileTree
+  title="Example project layout"
+  items={[
+    {
+      name: "hello",
+      kind: "folder",
+      children: [
+        { name: "bsis.json", kind: "file" },
+        {
+          name: "payload",
+          kind: "folder",
+          children: [{ name: "hello.txt", kind: "file" }],
+        },
+      ],
+    },
+  ]}
+/>
 
 ~~~json title="bsis.json"
 {

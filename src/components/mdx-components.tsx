@@ -2,6 +2,7 @@ import type { MDXComponents } from "@ariadocs/mdx";
 import { CodeBlock, Pre } from "@ariadocs/components";
 import { Callout, Card, Cards } from "@/components/mdx-blocks";
 import { Tab, Tabs } from "@/components/mdx-tabs";
+import { FileTree } from "@/components/file-tree";
 
 export const mdxComponents = {
   pre: Pre,
@@ -16,4 +17,5 @@ export const mdxComponents = {
   Card,
   Cards,
   CodeBlock,
+  FileTree,
 } as MDXComponents;
