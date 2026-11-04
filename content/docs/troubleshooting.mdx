@@ -69,6 +69,16 @@ For an explicit `--target`, its parent directory must already exist. Create an a
 
 The raw `bsis.exe` builder has no embedded application payload. First create `Setup.exe` using the `build` command, then run `install` on the **generated** executable. If an already-packaged setup is corrupted, inspection will fail as well.
 
+## Bundle inspection succeeds but an embedded file is damaged
+
+Ordinary `inspect` checks the compressed checksum and package structure; it does not hash each uncompressed embedded file. Run:
+
+~~~powershell
+.\BSIS-Hello-Setup.exe inspect --deep
+~~~
+
+Deep mode checks every file without writing to disk, and rejects wrong hashes, truncation or undeclared trailing bytes. It does **not** prove publisher identity; use builds from a trusted source.
+
 ## Build reports an invalid path or JSON key
 
 The version 1 manifest accepts only `schema_version`, `product` and `files` with their documented child fields. Future configuration ideas such as `ui`, `shortcuts`, `registry` and `update` are not supported in the current prototype.

@@ -63,6 +63,21 @@ Inspect validates the embedded bundle and prints product information, the file c
 | Flag | Required | Meaning |
 | --- | --- | --- |
 | `--bundle <path>` | No | Read the specified bundle instead of the current executable |
+| `--deep` | No | Decompress and verify every declared payload file without extracting |
+| `--json` | No | With `--deep`, emit a machine-readable verification report |
+
+### Deep package inspection
+
+Use deep mode to check package contents before installation or in CI:
+
+~~~powershell
+.\BSIS-Hello-Setup.exe inspect --deep
+.\BSIS-Hello-Setup.exe inspect --deep --json
+~~~
+
+Normal inspect validates the compressed payload digest and manifest header. **Deep inspection** additionally decompresses and SHA-256 checks every embedded file, rejects truncated content and undeclared trailing bytes, and does not install or write files.
+
+JSON includes `product`, `verified_files`, `verified_bytes` and `compressed_bytes`. A mismatch returns a nonzero exit status. These checks do **not** authenticate the publisher.
 
 ## Install
 
