@@ -36,7 +36,21 @@ Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"
 .\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 ~~~
 
-Running Setup.exe without a command starts a simple interactive console prompt. Supplying --yes skips the confirmation prompt.
+Running Setup.exe without a command starts a simple interactive console prompt. Supplying --yes skips the confirmation prompt. **When started by double-clicking from Windows Explorer**, the updated prototype displays either **INSTALLATION COMPLETE** or **INSTALLATION FAILED OR CANCELLED**, then waits for you to press Enter before closing. Explicit command-line invocations still return normally without pausing.
+
+## What happens after pressing Y?
+
+If you accept the default path, the included hello-world sample installs to:
+
+~~~text
+%LOCALAPPDATA%\Programs\bsis.hello\app\hello.txt
+~~~
+
+To open the folder in Windows Explorer, press Win+R and paste `%LOCALAPPDATA%\Programs\bsis.hello\app`.
+
+The example contains only `hello.txt` to verify the install/uninstall pipeline. **No desktop icon, Start Menu shortcut or app launcher is installed** yet. An existing installation destination also causes a deliberate error; this prototype does not overwrite it.
+
+The completion summary shows the actual destination and a command to uninstall it. The Setup.exe you used is required to uninstall through that command.
 
 ## Safeguards and limits
 
