@@ -34,12 +34,48 @@ description: Experimental implementation progress and next development milestone
 - [ ] Unify graphical, interactive terminal and silent installation plans.
 - [ ] Prototype safe extension points and built-in installer steps.
 
+## Planned: developer-owned signed updates
+
+**Status: planned, not available in the current prototype.** BSIS will offer an optional updater inspired by Tauri's signing model. Applications built with BSIS will use their **own signing keys and update hosting**. BSIS will not require a shared BSIS certificate, account, subscription, or centrally operated update server.
+
+### Proposed developer workflow
+
+1. **Generate keys locally.** A future `bsis signer generate` command will create an Ed25519 private/public keypair. Keep the private key secret (locally or in protected CI secrets), and include only the public key in the installed updater.
+2. **Build a new release.** Package the application's next version using BSIS. A proposed `bsis update manifest` command will describe its application ID, version, platform, release channel, download URL, SHA-256 hash and release notes.
+3. **Sign release metadata.** A proposed `bsis update sign` command will sign canonical update metadata with the developer's private key. The key is **not** uploaded to the distribution server.
+4. **Publish files anywhere over HTTPS.** GitHub Releases plus static metadata, a VPS with nginx, or another static host can serve the download and signed manifest. An always-running update API is not required.
+5. **Verify before updating.** The optional BSIS updater checks the signature using the public key embedded at installation, verifies the downloaded file hash and identity/version constraints, then asks the user to install (or defers as configured).
+
+These are **proposed command names**, not commands that work today. Release channels (stable, beta and nightly), manual or application-triggered update checks, secure key rotation and safe rollback are also planned.
+
+### Signing is not the same as Windows publisher trust
+
+| Mechanism | Purpose | Requirement |
+| --- | --- | --- |
+| **Ed25519 update signature** | Prove that an update came from the application's trusted signing key | Developer-owned keypair; no certificate purchase |
+| **Windows Authenticode** | Let Windows verify a publisher's executable signature | Optional; developer supplies their own trusted code-signing certificate or service |
+| **SHA-256 package hashes** | Detect changed or corrupted files | Already used by the installer prototype, but **not** publisher authentication |
+
+BSIS will never sign third-party applications under a shared BSIS publisher identity. Authenticode signing may be applied to the finished setup executable; the package reader will need tests covering signed PE files and the embedded BSIS payload/footer.
+
+### Implementation checklist
+
+- [ ] Define and review the versioned signed-update manifest format and trust model.
+- [ ] Add Ed25519 key generation, signing and verification with safe local/CI key handling.
+- [ ] Define pinned public keys, key rotation and invalid-signature/downgrade rejection.
+- [ ] Provide static metadata and GitHub Releases / VPS deployment examples.
+- [ ] Build the opt-in updater, release-channel support and user-facing update prompt.
+- [ ] Add safe in-place upgrades with staging, recovery, rollback and user-data preservation.
+- [ ] Test tampering, replay, interruptions, Windows file locks and optional Authenticode signing.
+
+Updates will **not** be enabled automatically in every installer. Developers choose whether to ship the updater and where to host their own updates.
+
 ## Before a public release
 
 - [ ] Add Windows shortcuts, services, registry operations and controlled UAC.
 - [ ] Explore LZMA2, LZ4 and compression presets.
 - [ ] Implement repairs, upgrades and transactional rollback.
-- [ ] Integrate Authenticode signing and verification.
+- [ ] Integrate optional developer-provided Authenticode signing and verification (separate from update signatures).
 - [ ] Ship examples, reliable Windows tests and documented supported APIs.
 - [ ] Make BSIS core source public when the framework is ready.
 
