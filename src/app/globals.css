@@ -147,8 +147,8 @@
 .bsis-docs-shell {
   --aria-header-height: 0px;
   --aria-docs-max-width: 100%;
-  --aria-sidebar-width: 17rem;
-  --aria-toc-width: 16rem;
+  --aria-sidebar-width: 18rem;
+  --aria-toc-width: 17rem;
   min-height: 100dvh;
   background: var(--background);
 }
@@ -172,4 +172,29 @@
 }
 .bsis-docs-shell [data-slot="docs-page-content"] pre {
   overflow-x: auto;
+}
+
+
+/* Keep reading content anchored to the navigation, not floating in a
+   giant centered gap on ultrawide monitors. Preserve legible line lengths. */
+@media (min-width: 1024px) {
+  .bsis-docs-shell [data-slot="docs-content"] {
+    padding-left: clamp(2rem, 3.25vw, 4rem);
+    padding-right: clamp(1.5rem, 2.4vw, 3rem);
+  }
+  .bsis-docs-shell [data-slot="docs-page"] {
+    margin-left: 0;
+    margin-right: auto;
+    max-width: 52rem;
+  }
+}
+
+.bsis-docs-shell [data-slot="docs-sidebar"] {
+  background: var(--background);
+}
+
+/* The default dark surface must exist before hydration, including on refresh. */
+html,
+body {
+  min-height: 100%;
 }

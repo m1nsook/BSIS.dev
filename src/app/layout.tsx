@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { DocsSearchProvider } from "@/components/docs-search";
 import { ThemeSync } from "@/components/theme-controls";
 import { getDocsSearchEntries } from "@/lib/docs-search-index";
+import { prepaintTheme } from "@/lib/theme-bootstrap";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
@@ -18,7 +19,11 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const entries = await getDocsSearchEntries();
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable + " " + jetbrainsMono.variable + " antialiased"}>
+    <html lang="en" suppressHydrationWarning className={inter.variable + " " + jetbrainsMono.variable + " dark antialiased"}>
+      <head>
+        <meta name="color-scheme" content="dark light" />
+        <script dangerouslySetInnerHTML={{ __html: prepaintTheme }} />
+      </head>
       <body className="flex min-h-screen flex-col bg-background font-sans text-foreground">
         <ThemeSync />
         <DocsSearchProvider entries={entries}>
