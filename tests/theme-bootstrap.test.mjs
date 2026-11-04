@@ -12,7 +12,7 @@ function bootstrap(saved, prefersDark, storageThrows = false) {
         else classes.delete(name);
       },
     },
-    style: { colorScheme: "" },
+    style: { colorScheme: "", backgroundColor: "" },
   };
   runInNewContext(prepaintTheme, {
     document: { documentElement: root },
@@ -26,23 +26,23 @@ function bootstrap(saved, prefersDark, storageThrows = false) {
       matchMedia: () => ({ matches: prefersDark }),
     },
   });
-  return { dark: classes.has("dark"), colorScheme: root.style.colorScheme };
+  return { dark: classes.has("dark"), colorScheme: root.style.colorScheme, backgroundColor: root.style.backgroundColor };
 }
 
 describe("theme is ready before the first paint", () => {
   test("stored dark beats system light", () => {
-    expect(bootstrap("dark", false)).toEqual({ dark: true, colorScheme: "dark" });
+    expect(bootstrap("dark", false)).toEqual({ dark: true, colorScheme: "dark", backgroundColor: "#0c0c0c" });
   });
   test("stored light beats system dark", () => {
-    expect(bootstrap("light", true)).toEqual({ dark: false, colorScheme: "light" });
+    expect(bootstrap("light", true)).toEqual({ dark: false, colorScheme: "light", backgroundColor: "#ffffff" });
   });
   test("follows system dark when unset", () => {
-    expect(bootstrap(null, true)).toEqual({ dark: true, colorScheme: "dark" });
+    expect(bootstrap(null, true)).toEqual({ dark: true, colorScheme: "dark", backgroundColor: "#0c0c0c" });
   });
   test("follows system light when unset", () => {
-    expect(bootstrap(null, false)).toEqual({ dark: false, colorScheme: "light" });
+    expect(bootstrap(null, false)).toEqual({ dark: false, colorScheme: "light", backgroundColor: "#ffffff" });
   });
   test("works when storage is denied", () => {
-    expect(bootstrap(null, true, true)).toEqual({ dark: true, colorScheme: "dark" });
+    expect(bootstrap(null, true, true)).toEqual({ dark: true, colorScheme: "dark", backgroundColor: "#0c0c0c" });
   });
 });

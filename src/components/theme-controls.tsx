@@ -25,6 +25,7 @@ function applyTheme(dark: boolean) {
   const root = document.documentElement;
   root.classList.toggle("dark", dark);
   root.style.colorScheme = dark ? "dark" : "light";
+  root.style.backgroundColor = dark ? "#0c0c0c" : "#ffffff";
 }
 
 /** Synchronize later OS/cross-tab changes only. Initial paint is handled in <head>. */

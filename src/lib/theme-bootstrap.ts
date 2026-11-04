@@ -9,4 +9,5 @@ export const prepaintTheme = `(function () {
   var dark = saved === "dark" || (saved !== "light" && prefersDark);
   root.classList.toggle("dark", dark);
   root.style.colorScheme = dark ? "dark" : "light";
+  root.style.backgroundColor = dark ? "#0c0c0c" : "#ffffff";
 })();`;
