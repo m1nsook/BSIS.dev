@@ -141,7 +141,13 @@
 }
 
 /* A subtle documentation surface without overriding AriaDocs component styles. */
+/* The same full-width three-column grid is used by guides and reference.
+   AriaDocs otherwise centers a 90rem shell, leaving a wide empty gutter
+   between the site header and the sidebar on large desktops. */
 .bsis-docs-shell {
+  --aria-docs-max-width: 100%;
+  --aria-sidebar-width: 17rem;
+  --aria-toc-width: 16rem;
   min-height: calc(100svh - var(--aria-header-height));
   background: var(--background);
 }
