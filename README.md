@@ -62,3 +62,8 @@ The documentation uses the package's `Pre` for highlighted, copyable fenced-code
 Write a language after the code fence marker for syntax highlighting, and optionally add `title="example.ps1"` to display a code-file header. Copy buttons are available on every fenced code block.
 
 Guides and the /reference index share `src/components/docs-shell.tsx`, including a persistent sidebar search field, page navigation and appearance controls. The marketing home retains its own header; do not add a second top header inside the documentation.
+
+
+### File trees
+
+Use the `<FileTree />` MDX component for nested project structures and package diagrams rather than fenced ASCII art. Pass a `title`, optional `description`, and an `items` array. Each item has a `name`, optional `kind` (`folder`, `file`, `executable`, `archive`, or `segment`), optional `detail`, and optional nested `children`. Branches are collapsible without JavaScript and the diagram can be copied as plain-text tree notation. See `content/docs/configuration.mdx` and `content/docs/packaging.mdx` for examples.

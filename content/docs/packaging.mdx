@@ -7,15 +7,33 @@ description: Current Zstandard executable bundles, validation and proposed compr
 
 The BSIS builder creates a self-contained setup executable by appending a **Zstandard-compressed file payload** to an existing native Windows PE runtime.
 
-~~~text
-BSIS-Hello-Setup.exe
-├── Native Windows runtime
-├── Compressed Zstandard stream
-│   ├── Payload magic and manifest length
-│   ├── Versioned package manifest
-│   └── File content, in manifest order
-└── Footer: magic, offset, length and SHA-256
-~~~
+<FileTree
+  title="Executable bundle layout"
+  description="Logical sections inside one executable file, not actual directories."
+  items={[
+    {
+      name: "BSIS-Hello-Setup.exe",
+      kind: "executable",
+      children: [
+        { name: "Native Windows runtime", kind: "segment" },
+        {
+          name: "Compressed Zstandard stream",
+          kind: "archive",
+          children: [
+            { name: "Payload magic and manifest length", kind: "segment" },
+            { name: "Versioned package manifest", kind: "segment" },
+            { name: "File content, in manifest order", kind: "segment" },
+          ],
+        },
+        {
+          name: "Footer",
+          kind: "segment",
+          detail: "Magic, offset, length and SHA-256",
+        },
+      ],
+    },
+  ]}
+/>
 
 The builder requires a runtime compiled for Windows; a Linux binary is not interchangeable with a Windows setup executable.
 
