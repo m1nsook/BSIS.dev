@@ -11,13 +11,14 @@ description: Implemented Rust core and future system boundaries.
 | --- | --- | --- |
 | **bsis-core** | Rust | Manifest validation, paths, Zstandard bundle, installation and uninstall |
 | **bsis** | Rust / Clap | Build CLI, bundle inspection, console install/uninstall |
+| **bsis GUI (opt-in)** | Rust / Tao / Wry / WebView2 | Fixed offline HTML/CSS wizard calling the same core install operation |
 | **BSIS.dev** | Next.js + AriaDocs | Public guides and GitHub Pages deployment |
 
 The prototype uses a validated, versioned internal manifest. Files are hashed and streamed into a compressed executable overlay. The native setup runtime extracts them into a fresh staging directory and commits a new install by renaming the directory.
 
 ## Future architecture
 
-TypeScript developer configuration, a WebView2-backed GUI with Svelte/React components, interactive terminal UI, a shared installer-step protocol and a security-scoped plugin interface are all **proposals**.
+The first **WebView2 host is now prototyped** behind an explicit `gui` CLI command. Custom developer-provided Svelte/React interfaces, TypeScript configuration, a shared installer-step protocol and a security-scoped plugin interface are still **proposals**.
 
 We expect GUI, console and silent installation paths to share one validated action model. The UI should not run privileged Windows operations directly.
 

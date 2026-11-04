@@ -1,6 +1,6 @@
 ---
 title: Rust prototype
-description: Build and test the first standalone Windows console installer.
+description: Build and test the experimental Rust setup executable, including its opt-in Windows GUI.
 ---
 
 <Callout type="warning" title="Experimental maintainer preview">
@@ -40,6 +40,18 @@ Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"
 
 Running Setup.exe without a command starts a simple interactive console prompt. Supplying --yes skips the confirmation prompt. **When started by double-clicking from Windows Explorer**, the updated prototype displays either **INSTALLATION COMPLETE** or **INSTALLATION FAILED OR CANCELLED**, then waits for you to press Enter before closing. Explicit command-line invocations still return normally without pausing.
 
+## Optional WebView2 graphical installer
+
+The experimental runtime also supports a **separate, opt-in GUI**:
+
+~~~powershell title="PowerShell · GUI preview"
+.\BSIS-Hello-Setup.exe gui
+~~~
+
+The GUI uses an offline bundled HTML/CSS wizard with WebView2, but **the WebView2 Runtime must already be installed** on the PC. It displays real product metadata, asks for a new or empty installation folder, and invokes the same Rust installation engine as console mode. The default no-argument experience remains console-only.
+
+See [Installer UI](./installer-ui/) for details and limitations.
+
 ## What happens after pressing Y?
 
 If you accept the default path, the included hello-world sample installs to:
@@ -70,7 +82,7 @@ The engine extracts files to a temporary sibling directory first. If the chosen 
 - Files are unpacked into a staging directory and verified before they are moved into place.
 - A receipt lists installed files. Uninstall checks hashes and refuses to delete modified tracked files.
 - The current setup executable must be retained to invoke the uninstall operation; no registered uninstaller exists yet.
-- There is no GUI, UAC, shortcuts, registry integration, Windows services, signing, LZMA2, updater or public plugin API.
+- A basic WebView2 GUI preview exists, but custom application-supplied UI, UAC, shortcuts, registry integration, Windows services, signing, LZMA2, updater and public plugin APIs do not.
 - SHA-256 checksums detect corruption but do **not** authenticate a publisher.
 
 Do not use this prototype for production distribution.

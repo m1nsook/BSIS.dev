@@ -1,32 +1,63 @@
 ---
 title: Installer UI
-description: Plans for graphical, console and silent installation experiences.
+description: Experimental Windows WebView2 graphical installer and the planned UI architecture.
 ---
 
-## Design-first installation
+<Callout type="warning" title="Experimental GUI — Windows only">
+  The graphical installer is an opt-in preview in the private BSIS repository. It has a fixed, bundled HTML/CSS wizard, no stable developer UI API, and no public release. Windows desktop testing is still required before making it the default.
+</Callout>
 
-The intended experience is closer to developing a website than writing a traditional installer wizard. Developers should be able to use HTML/CSS and potentially Svelte or React for screen layouts, branding and interactive forms.
+## What works in the first GUI prototype
 
-The renderer is still under evaluation. **WebView2 is a candidate**, not a dependency developers are currently required to install.
+The BSIS installer runtime now offers a **WebView2-based graphical window** as an alternative to the existing console prompt. It uses Rust/Tao for the native window and Wry to host the local HTML/CSS UI. No website or external assets are loaded by the wizard.
 
-## One engine, three interfaces
+The experimental GUI shows the real embedded product name, version, publisher and file count, allows the installation destination to be changed, performs installation through the same native Rust engine used by the console installer, and displays completion or a readable failure.
 
-| Interface | Purpose |
+The screen currently has an **indeterminate** installation indicator — it does not provide per-file progress percentages.
+
+## Try it on Windows
+
+Build a sample Setup.exe as described in [Getting started](./getting-started/) or use a current Windows CI artifact, and **extract the ZIP into a permanent directory first**.
+
+~~~powershell title="PowerShell · graphical preview"
+.\BSIS-Hello-Setup.exe gui
+~~~
+
+Choose a **new or existing empty directory**, then select **Install now**. A nonempty directory is rejected without overwriting files. After success, the GUI displays the destination and a completion message. Use the [uninstall CLI](./cli/) to remove the installed files.
+
+Running Setup.exe **without arguments still opens console mode** in this prototype. The GUI does not yet open by default.
+
+## Runtime requirements
+
+- Windows 10 or 11, desktop session.
+- Microsoft Edge **WebView2 Runtime** must already be available.
+- The Setup.exe still contains the Rust installation engine, bundled UI assets and Zstandard-compressed application payload.
+
+If WebView2 is missing, the \`gui\` command reports an error. The **console installer remains usable**, but we have not yet implemented bundling or an offline fallback for the WebView2 runtime itself.
+
+## Rust-to-UI boundary
+
+The HTML screen cannot ask the Rust core to execute an arbitrary command. The prototype only recognizes two typed IPC actions:
+
+| Action | Result |
 | --- | --- |
-| Graphical | Rich custom wizard screens and progress |
-| Interactive console | Keyboard-driven installation in terminals or remote sessions |
-| Silent | Repeatable automation without user prompts |
+| \`install\` | Pass a destination to the same validated Rust installation engine |
+| \`close\` | Close the window, unless installation is in progress |
 
-All modes should work from the same validated installation plan. For example, a component selected in the GUI should have a matching configurable option in console and silent modes.
+Installation runs on a worker thread so the UI remains responsive. Results are returned to the main UI thread, and messages are displayed as text rather than injected as HTML.
 
-## Candidate built-in screens
+This is an **initial boundary**, not yet a complete security review. Future custom developer UI requires stricter permissions, navigation policy, event schemas and trust rules.
 
-Welcome, license, destination, component selection, progress, failure and finish are good defaults. A developer should be free to replace them with custom UI components rather than rewrite Windows installation operations.
+## What remains planned
 
-## Security boundary
+The following are **not yet implemented**:
 
-The UI is untrusted presentation code relative to privileged system operations. Sensitive operations should be exposed through purpose-built commands with strict arguments, path validation and explicit permission requirements.
+- Svelte/React project-provided installer screens and reusable UI components.
+- A shared step engine for welcome, license, components, progress and success.
+- Detailed progress events, cancellation and rollback.
+- Native directory picker and richer accessibility testing.
+- Automatic GUI-on-double-click and a documented fallback for missing WebView2.
+- An installed/registered uninstaller and Apps & Features entry.
+- Registry integration, shortcuts, services, UAC elevation, updaters and plugins.
 
-## Prototype target
-
-The earliest graphical prototype only needs to install one application from an embedded payload, provide visible progress, and offer a working uninstall path.
+The console installer and its proven unattended commands remain part of BSIS as this UI develops. See [Roadmap](./roadmap/) for release-readiness goals.
