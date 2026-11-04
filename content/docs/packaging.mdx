@@ -76,3 +76,10 @@ The current Rust manifest imposes limits on manifest bytes, file count and total
 The binary layout is provisional. Do not build tooling that assumes long-term compatibility with the current overlay or footer format.
 
 For the manifest fields see [Configuration](./configuration/); for install and uninstall safeguards see [Security model](./security/).
+
+
+## Preflight a package
+
+Before writing a Setup.exe, developers can run the read-only `plan --config bsis.json [--json]` command to preview sorted destination paths, file sizes and SHA-256 hashes. It catches invalid Windows destinations, missing/linked sources and collisions before compression.
+
+[Package preflight](./build-plan/) documents the command and JSON report. A plan is a snapshot, **not a build cache**: BSIS independently re-checks files while packaging, because they can change after the preview.
