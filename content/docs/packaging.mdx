@@ -32,10 +32,10 @@ The embedded manifest enumerates each file's relative path, byte length and SHA-
 ## Extraction and commit
 
 1. Validate the package metadata and target path.
-2. Refuse to install into an existing directory.
+2. Accept a **new or existing empty** destination directory. Reject nonempty folders and unsupported filesystem links.
 3. Create a fresh staging directory beside the target.
 4. Decompress and write each file, verifying its hash.
-5. Store the installation receipt and rename the completed stage into place.
+5. Store the installation receipt and rename the completed stage into place. For an existing empty folder, temporarily move that folder aside and attempt restoration if the commit fails.
 
 If extraction fails before the final rename, the temporary stage is removed. This does not provide upgrade rollback or protect against all concurrent filesystem attacks.
 

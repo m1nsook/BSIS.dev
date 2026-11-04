@@ -48,13 +48,21 @@ If you accept the default path, the included hello-world sample installs to:
 
 To open the folder in Windows Explorer, press Win+R and paste `%LOCALAPPDATA%\Programs\bsis.hello\app`.
 
-The example contains only `hello.txt` to verify the install/uninstall pipeline. **No desktop icon, Start Menu shortcut or app launcher is installed** yet. An existing installation destination also causes a deliberate error; this prototype does not overwrite it.
+The example contains only `hello.txt` to verify the install/uninstall pipeline. **No desktop icon, Start Menu shortcut or app launcher is installed** yet. An **existing empty folder is now accepted**, but a folder containing files is deliberately rejected. The interactive installer explains the problem and asks for another folder rather than proceeding. The prototype does not overwrite existing files or repair installations.
 
 The completion summary shows the actual destination and a command to uninstall it. The Setup.exe you used is required to uninstall through that command.
 
+## Choosing an existing folder
+
+If you manually create a folder before installation, you can select it **provided that it is empty**. For example, a freshly created `C:\Users\YourName\Desktop\MyBSISTest` directory is acceptable.
+
+If a selected directory already contains files, the installer tells you it is **not empty**, then asks for another location. Pick a new folder name or an existing empty directory.
+
+The engine extracts files to a temporary sibling directory first. If the chosen empty folder already exists, it temporarily moves that original folder aside and tries to restore it if committing the completed installation fails. This is an experimental installation model, not a hardened transactional update system.
+
 ## Safeguards and limits
 
-- Installations only target **new, nonexistent directories**. The parent directory must already exist for an explicitly provided target.
+- Installations target **new or existing empty directories**. Nonempty folders, files, symlinks and Windows reparse points are rejected. The parent directory must already exist for an explicitly provided target.
 - Files are unpacked into a staging directory and verified before they are moved into place.
 - A receipt lists installed files. Uninstall checks hashes and refuses to delete modified tracked files.
 - The current setup executable must be retained to invoke the uninstall operation; no registered uninstaller exists yet.
