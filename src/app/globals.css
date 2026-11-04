@@ -175,18 +175,11 @@
 }
 
 
-/* Keep reading content anchored to the navigation, not floating in a
-   giant centered gap on ultrawide monitors. Preserve legible line lengths. */
-@media (min-width: 1024px) {
-  .bsis-docs-shell [data-slot="docs-content"] {
-    padding-left: clamp(2rem, 3.25vw, 4rem);
-    padding-right: clamp(1.5rem, 2.4vw, 3rem);
-  }
-  .bsis-docs-shell [data-slot="docs-page"] {
-    margin-left: 0;
-    margin-right: auto;
-    max-width: 52rem;
-  }
+/* Let AriaDocs center the readable 48rem article in the middle grid track.
+   Pinning it to the left created a large unbalanced void before the TOC. */
+.bsis-docs-shell [data-slot="docs-page"] {
+  margin-inline: auto;
+  max-width: 48rem;
 }
 
 .bsis-docs-shell [data-slot="docs-sidebar"] {
