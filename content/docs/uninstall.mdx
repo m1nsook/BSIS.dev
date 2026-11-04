@@ -25,6 +25,24 @@ Use the actual installation path you chose. For a file in your current PowerShel
 
 The old Setup.exe uninstall --target command remains supported, including for installations made before this native uninstaller was added.
 
+## Optional graphical uninstaller (Windows)
+
+For installations created with the updated BSIS runtime, the standalone uninstaller also includes an **offline WebView2 removal window**. No compressed Setup.exe package is needed:
+
+~~~powershell title="PowerShell · GUI uninstall from the installed app"
+& "$env:LOCALAPPDATA\BSIS-Hello-Test\Uninstall.exe" gui
+~~~
+
+Or open PowerShell in the installation folder and run ` .\Uninstall.exe gui ` (without the surrounding spaces). **Double-clicking Uninstall.exe still uses console confirmation** for compatibility.
+
+The window shows the installed product, version, publisher, destination and tracked-file count. BSIS checks the installation receipt and file hashes before displaying the preview, and **rechecks everything immediately before removal**. If files are missing or modified, it shows a warning or a refusal message rather than silently deleting them. A missing or invalid receipt prevents the preview from launching at all.
+
+Click **Uninstall** to remove tracked application files. The core engine runs on a worker thread, so the window stays responsive. **Cancel** closes without making changes, until removal begins. Once removal starts, the close button is disabled to prevent exiting mid-operation; there is no cancellation or rollback during deletion in this prototype.
+
+The GUI cannot supply an arbitrary directory or shell command: it always operates on the folder containing the running `Uninstall.exe`. Only the `uninstall` and `close` messages are accepted by the native host. After success, close the window to let Windows finish best-effort self-cleanup.
+
+**Requirements:** Windows 10/11 and the Microsoft Edge WebView2 Runtime. Run `gui --dev` only when testing the UI with WebView2 Developer Tools. Without WebView2, use the existing **console** mode. Interactive GUI testing is still needed before a production release.
+
 ## What BSIS removes
 
 The engine reads the receipt file and verifies the recorded hashes before removing **tracked files only**. The receipt now also stores the installed Uninstall.exe's size and SHA-256 checksum.

@@ -27,6 +27,18 @@ Choose a **new or existing empty directory**, then select **Install now**. A non
 
 Running Setup.exe **without arguments still opens console mode** in this prototype. The GUI does not yet open by default.
 
+## Graphical removal from Uninstall.exe
+
+An installed `Uninstall.exe` now has its **own** opt-in WebView2 window. It does not contain the compressed application payload and therefore cannot launch the installation wizard. It instead opens the receipt-verified removal wizard:
+
+~~~powershell title="PowerShell · installed uninstaller preview"
+.\Uninstall.exe gui
+~~~
+
+The removal window lists the installed product and path, warns about observed file-integrity problems, and asks for confirmation. Its **Uninstall** action always targets the directory containing the running Uninstall.exe; it invokes the existing native receipt-validated uninstall engine, not a JavaScript file-deletion routine. Only tracked files are removed; unrelated user files remain. Windows finishes removal of the running Uninstall.exe after the window exits, if the post-exit cleanup helper can start.
+
+Double-clicking the native Uninstall.exe without arguments continues to show its console confirmation in this prototype. Graphical removal is **opt-in** and still needs interactive Windows testing. See [Uninstaller](./uninstall/) for the exact removal and failure behavior.
+
 ## Cancelling an installation safely
 
 Once you select **Install now**, the **Cancel installation** button remains available while the Rust installer is working. It sends a limited cancellation message to the native host rather than killing the process.
@@ -61,13 +73,15 @@ If WebView2 is missing, the \`gui\` command reports an error. The **console inst
 
 ## Rust-to-UI boundary
 
-The HTML screen cannot ask the Rust core to execute an arbitrary command. The prototype recognizes three narrowly typed IPC actions:
+The installation HTML screen cannot ask the Rust core to execute an arbitrary command. The installer prototype recognizes three narrowly typed IPC actions:
 
 | Action | Result |
 | --- | --- |
 | \`install\` | Pass a destination to the same validated Rust installation engine |
 | \`close\` | Close the window, unless installation is in progress |
 | `cancel` | Request cooperative cancellation while staging/extracting, with rollback before commit |
+
+The uninstaller has a **separate** IPC handler that accepts only `uninstall` and `close`, with no path parameters. The core discovers the removal directory from the installed executable’s own location and validates the receipt before deleting files.
 
 Installation runs on a worker thread so the UI remains responsive. **Native progress events** are sent from the core to the window's event loop for safe rendering as a progress bar and text status. The UI receives event data but cannot invoke arbitrary Rust commands. Errors or final results are returned to the main UI thread and displayed as text, not injected HTML.
 
