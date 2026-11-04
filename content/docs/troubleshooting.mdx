@@ -51,6 +51,16 @@ New installations include Uninstall.exe in the installation root. You can double
 
 If Uninstall.exe was removed, Setup.exe can still uninstall the application. The native uninstaller checks its receipt and refuses to delete modified tracked files. The final cleanup of a running Windows executable is **best-effort**: built-in Windows PowerShell waits for it to exit, removes it, then removes the directory **only if empty**. Antivirus policies or Windows PowerShell restrictions may leave Uninstall.exe behind. Never delete a directory containing unrelated user files to force cleanup.
 
+## Uninstall.exe reports OS error 32
+
+An early version could show `removing empty installation root: The process cannot access the file because it is being used by another process (os error 32)` when double-clicking the installed uninstaller.
+
+The cause was attempting to remove the directory containing the running `Uninstall.exe`. The corrected version defers that step until after the process exits. Use the updated Windows artifact; the previous error may appear even if tracked application files were already removed.
+
+## Right-click Inspect Element or Print appears in the installer
+
+Normal `.\BSIS-Hello-Setup.exe gui` now disables WebView2's browser menus, Inspect Element and browser shortcuts. Run `.\BSIS-Hello-Setup.exe gui --dev` to explicitly enable those debugging tools.
+
 ## Parent folder does not exist
 
 For an explicit `--target`, its parent directory must already exist. Create an appropriate parent yourself, or omit `--target` to use the supported per-user default.
