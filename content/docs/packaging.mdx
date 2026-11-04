@@ -47,6 +47,29 @@ cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/re
 
 The embedded manifest enumerates each file's relative path, byte length and SHA-256 checksum. The footer identifies the compressed stream and its digest. Ordinary inspection checks that compressed digest and the manifest; optional deep inspection also verifies each uncompressed embedded file hash.
 
+## Choose the Zstandard compression level
+
+The prototype currently uses **Zstandard only**, but the builder supports selecting how aggressively it compresses files with `--compression-level`. The default is **3** for compatibility with existing build commands.
+
+~~~powershell title="PowerShell · faster packaging"
+cargo run -p bsis --locked -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Fast-Setup.exe --compression-level 1
+~~~
+
+~~~powershell title="PowerShell · prioritize compressed size"
+cargo run -p bsis --locked -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Small-Setup.exe --compression-level 9
+~~~
+
+| Zstandard level | Typical tradeoff |
+| --- | --- |
+| 1 | Faster compression, often a larger setup file |
+| 3 (default) | General-purpose build |
+| 9 | More compression work, potentially a smaller setup file |
+| 19 | Highest currently accepted setting; much slower for many inputs |
+
+Allowed levels are **1 through 19**, inclusive. Invalid levels are rejected before packaging. Higher levels do not guarantee a smaller file for every data set, and they do not change the installed payload's contents or integrity verification. The entire executable contains the same version 1 Zstandard stream and SHA-256 footer regardless of the chosen level.
+
+The level is a **CLI flag on the build command**, not a `bsis.json` configuration field. LZMA2, LZ4 and named codec presets are still planned, not implemented.
+
 ## Deep verification without installing
 
 ~~~powershell
@@ -81,7 +104,7 @@ The current Rust manifest imposes limits on manifest bytes, file count and total
 | Proposed preset | Codec | Status |
 | --- | --- | --- |
 | Maximum | LZMA2 | Not implemented |
-| Balanced | Zstandard | Current prototype codec |
+| Balanced | Zstandard | Current implemented codec; selectable levels 1–19 |
 | Fast | LZ4 | Not implemented |
 
 The binary layout is provisional. Do not build tooling that assumes long-term compatibility with the current overlay or footer format.

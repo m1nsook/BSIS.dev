@@ -13,7 +13,7 @@ Not yet. The Rust core is private and the current proof of concept is not a publ
 
 ## Is there a graphical installer?
 
-No. The current working prototype uses a native **console interface**. Custom GUI screens built with web technologies are being explored; no renderer or public UI API is finalized.
+Yes, as an **experimental, opt-in Windows WebView2 preview**. A packaged setup can launch the fixed offline install wizard with `Setup.exe gui`. The installed `Uninstall.exe gui` opens a separate receipt-verified removal window. The default double-click/zero-argument flow is still console mode. Developer-provided custom Svelte/React screens and a stable UI API are not available yet. See [Installer UI](./installer-ui/).
 
 ## Which languages can I use?
 
@@ -21,7 +21,7 @@ The current engine is written in **Rust** and accepts **JSON** build configurati
 
 ## Which compression algorithms work?
 
-**Zstandard** is implemented for embedded offline payloads. LZMA2 and LZ4 are proposed compression presets.
+**Zstandard** is implemented for embedded offline payloads. Developers can select **compression levels 1–19** with `bsis build --compression-level`; the default is 3. LZMA2 and LZ4 remain proposed, not available. See [Packaging](./packaging/).
 
 ## Does `--yes` make it a silent installer?
 
