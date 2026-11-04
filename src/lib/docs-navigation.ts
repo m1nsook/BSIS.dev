@@ -32,7 +32,7 @@ export async function getDocsNavigation(): Promise<NavItem[]> {
     items: [
       ...page(""),
       folder("Getting started", "getting-started", ["getting-started", "prototype"]),
-      folder("Guides", "guides", ["configuration", "packaging", "installer-ui", "plugins"]),
+      folder("Guides", "guides", ["configuration", "packaging", "lifecycle", "uninstall", "installer-ui", "plugins"]),
       folder("Reference", "reference", ["cli", "security", "troubleshooting"]),
       folder("Project", "project", ["architecture", "vision", "roadmap", "faq"]),
     ],
