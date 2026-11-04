@@ -56,7 +56,7 @@ Inspect validates the embedded bundle and prints product information, the file c
 
 | Flag | Required | Meaning |
 | --- | --- | --- |
-| `--target <path>` | No | Installation destination; must not already exist |
+| `--target <path>` | No | Installation destination; must be new or an existing empty directory |
 | `--yes` | No | Skip the install confirmation prompt |
 
 With no target, BSIS proposes a per-user destination under `%LOCALAPPDATA%\Programs\<product.id>`. Running the packaged executable **without arguments** starts an interactive console prompt to choose the destination and confirm.
@@ -75,6 +75,20 @@ The `--yes` option skips confirmation. It does **not** mean that updates, unatte
 | `--yes` | No | Skip the uninstall confirmation prompt |
 
 BSIS checks the receipt and hashes of tracked files before deleting anything. A modified tracked file blocks uninstall; unrelated files are retained. This is not yet integrated into Windows Apps & Features.
+
+PowerShell requires the call operator `&` before **quoted executable paths**. For example, if Setup.exe is saved on the Desktop:
+
+~~~powershell title="PowerShell · uninstall a test app"
+& "$env:USERPROFILE\Desktop\BSIS-Hello-Setup.exe" uninstall --target "$env:USERPROFILE\Desktop\Botnitew\test" --yes
+~~~
+
+If you already opened PowerShell **in the folder containing Setup.exe**, prefix the executable with `.\`, as in the example below:
+
+~~~powershell
+.\BSIS-Hello-Setup.exe uninstall --target "$env:USERPROFILE\Desktop\Botnitew\test" --yes
+~~~
+
+**The setup executable must exist at the given path.** Windows does not automatically preserve EXEs opened from a ZIP archive. Extract the ZIP to a permanent folder before installation; otherwise, the printed temporary path may no longer exist later.
 
 ## Exit and error behavior
 

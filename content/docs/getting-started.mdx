@@ -43,7 +43,7 @@ The generated `BSIS-Hello-Setup.exe` contains both the Windows runtime and compr
 Get-Content "$env:LOCALAPPDATA\BSIS-Hello-Test\app\hello.txt"
 ~~~
 
-The target must not already exist. The console installer prints an error rather than overwrite an existing directory.
+The target must be new or an existing empty folder. If it contains user files, the console installer refuses to overwrite them.
 
 ## 4. Uninstall
 
@@ -51,7 +51,7 @@ The target must not already exist. The console installer prints an error rather 
 .\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
 ~~~
 
-Keep the original setup executable for uninstalling; a separate registered Windows uninstaller is not implemented yet. If tracked files have changed, uninstall refuses to remove them.
+Keep an **extracted, permanent copy** of Setup.exe for uninstalling; a separate registered Windows uninstaller is not implemented yet. Opening Setup.exe directly from a ZIP may use a temporary path that later disappears. For a quoted absolute executable path in PowerShell, use `& "C:\\path\\to\\BSIS-Hello-Setup.exe" uninstall ...`; when running from the same folder, use `.\\BSIS-Hello-Setup.exe`. If tracked files have changed, uninstall refuses to remove them.
 
 ## Next steps
 

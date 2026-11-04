@@ -17,7 +17,7 @@ The BSIS installer performs sensitive filesystem operations. The initial Rust pr
 | Bundle integrity | Checks compressed payload digest before extraction |
 | Extraction | Verifies each extracted file while writing to a staging directory |
 | Commit | Renames the completed stage to a new target after verification |
-| Existing installs | Refuses to install over an existing target |
+| Existing installs | Accepts a new or existing empty directory, but refuses to overwrite a nonempty target |
 | Uninstall | Validates the receipt and hashes before deleting tracked files |
 | Source input | Rejects unsupported links and reparse points during packaging |
 
@@ -29,7 +29,7 @@ SHA-256 detects accidental corruption and unexpected file changes. It **does not
 
 ## Install vs. uninstall
 
-During install, BSIS unpacks into a fresh directory beside the requested target and only moves it into position after extraction completes. This reduces incomplete installations but is not a general-purpose transaction manager.
+During install, BSIS unpacks into a fresh directory beside the requested target and only moves it into position after extraction completes. If the destination already exists and is empty, the prototype temporarily moves it aside and attempts restoration if committing the staged installation fails. This reduces incomplete installations but is not a general-purpose transaction manager.
 
 During uninstall, BSIS preserves files it did not install. If even one tracked file has changed, the preflight check refuses to proceed. It does not register a Windows uninstaller or support repairs yet.
 
