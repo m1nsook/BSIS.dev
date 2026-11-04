@@ -14,11 +14,25 @@ BSIS uses one Rust executable as both a developer build tool (before packaging) 
 | Command | Purpose | Where to run |
 | --- | --- | --- |
 | `build` | Embed files into a standalone Windows executable | Unbundled builder |
+| `plan` | Validate config and inventory package files without creating Setup.exe | Unbundled builder |
 | `inspect` | Validate and list the packaged files | Builder or packaged setup |
 | `gui` | Launch the experimental offline HTML/CSS wizard | Packaged setup on Windows with WebView2 |
 | `install` | Install to a new destination | Packaged setup |
 | `uninstall` | Remove only verified, tracked installed files | Installed Uninstall.exe or packaged setup |
 | `verify` | Audit receipt and file hashes without modifying anything | Setup.exe, installed Uninstall.exe, or builder |
+
+## Plan a build before packaging
+
+~~~powershell title="PowerShell · preview and validate source files"
+cargo run -p bsis --locked -- plan --config examples/hello/bsis.json
+cargo run -p bsis --locked -- plan --config examples/hello/bsis.json --json
+~~~
+
+The planner validates schema version 1, scans relative source mappings, checks Windows destination names and collisions, computes per-file SHA-256 checksums, and reports the uncompressed file count/size. It does **not** write Setup.exe.
+
+The required `--config <path>` selects the JSON source configuration, while optional `--json` returns a structured inventory for CI. A failed preflight exits nonzero, for example when two paths would collide on Windows.
+
+Files can change after preflight. The separate build operation always validates and hashes sources again. See [Package preflight](./build-plan/).
 
 ## Build
 

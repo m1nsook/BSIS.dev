@@ -24,6 +24,10 @@
     "title": "Configuration"
   },
   {
+    "slug": "build-plan",
+    "title": "Package preflight"
+  },
+  {
     "slug": "packaging",
     "title": "Packaging"
   },

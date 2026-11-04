@@ -95,3 +95,14 @@ export default defineConfig({
 ~~~
 
 Custom wizard screens, localization, appearance settings, shortcuts, elevation, updates and plugins are **not** recognized keys in the current JSON format. Refer to [Roadmap](./roadmap/) for the planned developer API.
+
+
+## Validate before building
+
+Use the implemented `plan` command to resolve every source mapping, hash source file contents, detect Windows destination collisions and preview the uncompressed package inventory **without generating** a setup executable.
+
+~~~powershell
+cargo run --locked -p bsis -- plan --config examples/hello/bsis.json --json
+~~~
+
+See [Package preflight](./build-plan/) for reported fields and error conditions. The schema remains version 1; this command does not add any new configuration keys.

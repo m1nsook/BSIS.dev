@@ -1,0 +1,60 @@
+---
+title: Package preflight
+description: Preview and validate an installer's source files before building a Windows Setup.exe.
+---
+
+<Callout type="warning" title="Experimental private builder">
+  The plan command exists in the private Rust builder prototype. It is not a published package or stable public CLI.
+</Callout>
+
+## Why plan a build?
+
+A BSIS project may include thousands of files, duplicate mappings and Windows-only naming constraints. Discovering those errors **before compression** avoids wasted builds and provides a developer-friendly inventory for build pipelines.
+
+The preflight command reads the config and source files but does **not** generate or overwrite a Setup.exe.
+
+## Example
+
+Given a version 1 `bsis.json` file containing a `files` mapping from a local source directory to the installation root:
+
+~~~powershell title="PowerShell · readable package plan"
+cargo run --locked -p bsis -- plan --config examples/hello/bsis.json
+~~~
+
+Use structured output for CI and other tools:
+
+~~~powershell title="PowerShell · JSON"
+cargo run --locked -p bsis -- plan --config examples/hello/bsis.json --json
+~~~
+
+## What the preflight checks
+
+- The configuration is valid JSON using the supported version 1 schema and known fields.
+- All `from` entries exist and are relative to the configuration directory.
+- Directory mappings are recursively expanded into individual files in a consistent order.
+- Source symlinks/reparse points and unsupported paths are rejected.
+- All Windows destination paths use safe relative components.
+- Destinations do not collide case-insensitively (for example, `App/Readme.txt` and `app/readme.txt`).
+- A destination cannot be both a file and a parent directory.
+- The resulting manifest satisfies the same file-count and total-size limits as the package builder.
+
+## Plan report
+
+The JSON output provides:
+
+| Property | Meaning |
+| --- | --- |
+| `product` | Validated product ID, name, version and publisher |
+| `file_count` | Number of resolved payload files |
+| `total_uncompressed_bytes` | Sum of file contents, excluding installer runtime/compression overhead |
+| `files` | Sorted list of destinations with `path`, `size` and `sha256` for each file |
+
+The output excludes absolute developer machine source paths. Hashes detect changes but do not authenticate who published the files.
+
+## How it relates to build
+
+Preflight and packaging are **separate operations**. Even if `plan` succeeds, a source file may be edited or deleted before `build` runs. The normal builder therefore rechecks and hashes the sources again when writing a package.
+
+Planning does not reserve disk space, test whether an EXE will launch on a real Windows desktop, or sign the result. It is also **not** the installed-file verifier; use [Verify installations](./verification/) after installation.
+
+See [Configuration](./configuration/), [Packaging](./packaging/) and [Security model](./security/) for details.
