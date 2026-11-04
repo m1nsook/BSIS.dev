@@ -23,7 +23,7 @@ Build a sample Setup.exe as described in [Getting started](./getting-started/) o
 .\BSIS-Hello-Setup.exe gui
 ~~~
 
-Choose a **new or existing empty directory**, then select **Install now**. A nonempty directory is rejected without overwriting files. After success, the GUI displays the destination and a completion message. Use the [uninstall CLI](./cli/) to remove the installed files.
+Choose a **new or existing empty directory**, then select **Install now**. A nonempty directory is rejected without overwriting files. After success, the GUI displays the destination and a completion message. The installation folder also contains a native **Uninstall.exe**, which works without the original Setup.exe. See [Uninstaller](./uninstall/).
 
 Running Setup.exe **without arguments still opens console mode** in this prototype. The GUI does not yet open by default.
 
@@ -57,7 +57,7 @@ The following are **not yet implemented**:
 - Detailed progress events, cancellation and rollback.
 - Native directory picker and richer accessibility testing.
 - Automatic GUI-on-double-click and a documented fallback for missing WebView2.
-- An installed/registered uninstaller and Apps & Features entry.
+- A **Windows-registered** uninstaller and Apps & Features entry (an unregistered installed Uninstall.exe now exists).
 - Registry integration, shortcuts, services, UAC elevation, updaters and plugins.
 
 The console installer and its proven unattended commands remain part of BSIS as this UI develops. See [Roadmap](./roadmap/) for release-readiness goals.

@@ -1,16 +1,62 @@
 [
-  { "slug": "index", "title": "Overview" },
-  { "slug": "getting-started", "title": "Getting started" },
-  { "slug": "prototype", "title": "Rust prototype" },
-  { "slug": "configuration", "title": "Configuration" },
-  { "slug": "packaging", "title": "Packaging" },
-  { "slug": "installer-ui", "title": "Installer UI" },
-  { "slug": "plugins", "title": "Plugins" },
-  { "slug": "cli", "title": "CLI reference" },
-  { "slug": "security", "title": "Security model" },
-  { "slug": "troubleshooting", "title": "Troubleshooting" },
-  { "slug": "architecture", "title": "Architecture" },
-  { "slug": "vision", "title": "Vision" },
-  { "slug": "roadmap", "title": "Roadmap" },
-  { "slug": "faq", "title": "FAQ" }
+  {
+    "slug": "index",
+    "title": "Overview"
+  },
+  {
+    "slug": "getting-started",
+    "title": "Getting started"
+  },
+  {
+    "slug": "prototype",
+    "title": "Rust prototype"
+  },
+  {
+    "slug": "uninstall",
+    "title": "Uninstaller"
+  },
+  {
+    "slug": "configuration",
+    "title": "Configuration"
+  },
+  {
+    "slug": "packaging",
+    "title": "Packaging"
+  },
+  {
+    "slug": "installer-ui",
+    "title": "Installer UI"
+  },
+  {
+    "slug": "plugins",
+    "title": "Plugins"
+  },
+  {
+    "slug": "cli",
+    "title": "CLI reference"
+  },
+  {
+    "slug": "security",
+    "title": "Security model"
+  },
+  {
+    "slug": "troubleshooting",
+    "title": "Troubleshooting"
+  },
+  {
+    "slug": "architecture",
+    "title": "Architecture"
+  },
+  {
+    "slug": "vision",
+    "title": "Vision"
+  },
+  {
+    "slug": "roadmap",
+    "title": "Roadmap"
+  },
+  {
+    "slug": "faq",
+    "title": "FAQ"
+  }
 ]

@@ -68,9 +68,9 @@ The current experiment:
 - Appends a Zstandard-compressed payload to a native Windows executable.
 - Verifies bundle and extracted file hashes with SHA-256.
 - Uses a temporary staging directory before committing a **new or existing empty-folder** installation.
-- Writes a receipt and refuses to uninstall modified tracked files.
+- Writes a receipt, creates a native **Uninstall.exe** and refuses to delete modified tracked files.
 
-Read [Packaging](./packaging/) and [Rust prototype](./prototype/) for implementation details.
+Read [Packaging](./packaging/), [Rust prototype](./prototype/) and [Uninstaller](./uninstall/) for implementation details.
 
 ## Where BSIS is headed
 

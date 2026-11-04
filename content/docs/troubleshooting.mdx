@@ -3,7 +3,7 @@ title: Troubleshooting
 description: Common build, install and uninstall failures in the experimental Rust prototype.
 ---
 
-This guide covers the current **console-only** Windows prototype, not the future graphical installer.
+This guide covers the experimental Windows console installer, opt-in WebView2 GUI and native uninstaller.
 
 ## Installer closes after asking a question
 
@@ -39,7 +39,17 @@ PowerShell does not run programs from the current directory by bare name. Use `.
 .\BSIS-Hello-Setup.exe uninstall --target "C:\Test\BSIS-Hello" --yes
 ~~~
 
-If the completion screen printed a path under `AppData\Local\Temp` with `.zip`, Windows likely extracted it temporarily when you opened the executable inside the ZIP. That temporary copy may have been removed. **Extract the GitHub Actions ZIP to a permanent folder**, then invoke that saved `BSIS-Hello-Setup.exe`. You do not need to reinstall the payload simply to run uninstall.
+If an older completion screen printed a path under `AppData\Local\Temp` with `.zip`, Windows likely removed the temporary Setup.exe. **New BSIS installations include their own Uninstall.exe in the application folder**, so the original setup path is no longer required. For an older installation without Uninstall.exe, extract the GitHub Actions ZIP permanently and run that saved Setup.exe with `uninstall`.
+
+## The installed Uninstall.exe is missing or cleanup leaves a folder
+
+New installations include Uninstall.exe in the installation root. You can double-click it to confirm removal or run it using PowerShell:
+
+~~~powershell
+& "$env:LOCALAPPDATA\BSIS-Hello-Test\Uninstall.exe" uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+If Uninstall.exe was removed, Setup.exe can still uninstall the application. The native uninstaller checks its receipt and refuses to delete modified tracked files. The final cleanup of a running Windows executable is **best-effort**: built-in Windows PowerShell waits for it to exit, removes it, then removes the directory **only if empty**. Antivirus policies or Windows PowerShell restrictions may leave Uninstall.exe behind. Never delete a directory containing unrelated user files to force cleanup.
 
 ## Parent folder does not exist
 
@@ -63,7 +73,7 @@ BSIS compares the current installed files with the hashes stored in `.bsis-recei
 
 | Need | Current answer |
 | --- | --- |
-| Custom GUI or WebView2 screens | Planned; console prototype only |
+| Custom GUI or WebView2 screens | Fixed opt-in WebView2 preview exists; developer-defined UI is planned |
 | LZMA2 or LZ4 compression | Planned; Zstandard is currently fixed |
 | Update or repair an installed app | Not supported |
 | Windows shortcuts, services, registry or UAC | Not supported |

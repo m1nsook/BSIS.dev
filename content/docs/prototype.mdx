@@ -50,7 +50,7 @@ The experimental runtime also supports a **separate, opt-in GUI**:
 
 The GUI uses an offline bundled HTML/CSS wizard with WebView2, but **the WebView2 Runtime must already be installed** on the PC. It displays real product metadata, asks for a new or empty installation folder, and invokes the same Rust installation engine as console mode. The default no-argument experience remains console-only.
 
-See [Installer UI](./installer-ui/) for details and limitations.
+See [Installer UI](./installer-ui/) for details and limitations, and the [Uninstaller guide](./uninstall/) for the separate native removal program.
 
 ## What happens after pressing Y?
 
@@ -64,9 +64,9 @@ To open the folder in Windows Explorer, press Win+R and paste `%LOCALAPPDATA%\Pr
 
 The example contains only `hello.txt` to verify the install/uninstall pipeline. **No desktop icon, Start Menu shortcut or app launcher is installed** yet. An **existing empty folder is now accepted**, but a folder containing files is deliberately rejected. The interactive installer explains the problem and asks for another folder rather than proceeding. The prototype does not overwrite existing files or repair installations.
 
-The completion summary shows the actual destination and a **PowerShell-compatible** uninstall command. The new command begins with `&`, because PowerShell requires the call operator before a quoted executable path. The same Setup.exe is required for uninstalling; it is not yet installed or registered separately.
+The completion summary shows the actual destination and a **PowerShell-compatible** uninstall command. The new command begins with `&`, because PowerShell requires the call operator before a quoted executable path. New installations include a separate **Uninstall.exe** in the installation folder. You can double-click it to confirm removal, or run the installed Uninstall.exe in PowerShell with `uninstall --target <path> --yes`. Older installations may still require Setup.exe.
 
-**Extract the GitHub Actions ZIP before running Setup.exe.** Opening the EXE directly inside a ZIP may launch it from a temporary extraction directory, which can disappear after closing. The installer now warns about temporary locations. Save Setup.exe to a permanent folder for the uninstall command.
+**Extract the GitHub Actions ZIP before running Setup.exe.** Opening the EXE directly inside a ZIP may launch it from a temporary extraction directory, which can disappear after closing. The installer now warns about temporary locations. For new installations, the installed Uninstall.exe works without keeping the temporary Setup.exe. Extracting the ZIP remains preferable for reliable testing.
 
 ## Choosing an existing folder
 
@@ -81,7 +81,7 @@ The engine extracts files to a temporary sibling directory first. If the chosen 
 - Installations target **new or existing empty directories**. Nonempty folders, files, symlinks and Windows reparse points are rejected. The parent directory must already exist for an explicitly provided target.
 - Files are unpacked into a staging directory and verified before they are moved into place.
 - A receipt lists installed files. Uninstall checks hashes and refuses to delete modified tracked files.
-- The current setup executable must be retained to invoke the uninstall operation; no registered uninstaller exists yet.
+- New installations include a native Uninstall.exe with a receipt-verified checksum. It is not yet registered with Windows Apps & Features. Older installations without this helper can still be removed using their Setup.exe.
 - A basic WebView2 GUI preview exists, but custom application-supplied UI, UAC, shortcuts, registry integration, Windows services, signing, LZMA2, updater and public plugin APIs do not.
 - SHA-256 checksums detect corruption but do **not** authenticate a publisher.
 
