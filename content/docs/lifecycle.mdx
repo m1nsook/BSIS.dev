@@ -1,0 +1,79 @@
+---
+title: Installer lifecycle and recovery
+description: Current installation and removal guarantees, Windows limitations, and the next lifecycle milestones.
+---
+
+<Callout type="warning" title="Experimental prototype">
+  This guide describes the private BSIS Rust prototype as of November 2026. It is not a production-ready installer, and Windows Apps & Features registration, upgrades, and signed updates are not implemented.
+</Callout>
+
+## What works today
+
+BSIS builds a standalone Windows setup executable with a Zstandard-compressed payload, a versioned manifest and SHA-256 checks. A packaged setup can run in console mode or launch the opt-in offline WebView2 wizard with `gui`. Both paths use the same Rust installation engine.
+
+An installation writes a native `Uninstall.exe` and a `.bsis-receipt.json` record into the destination. The uninstaller works without the original setup executable.
+
+## Installation lifecycle
+
+1. **Validate input.** Reject invalid manifest entries, unsafe Windows destination names, linked source paths and unsupported installation targets.
+2. **Choose destination.** Accept only a new or existing empty directory. Nonempty folders are rejected; there is no in-place upgrade or repair.
+3. **Stage alongside the target.** Extract into a temporary sibling directory so the target is not partially populated while decompressing.
+4. **Verify content.** Check extracted file sizes and SHA-256 digests, and write the managed uninstaller and receipt.
+5. **Commit.** Rename the verified stage to the final destination. If the destination was an existing empty directory, temporarily move it aside and restore it when commit fails.
+6. **Report outcome.** The console or GUI shows success only after the Rust installation call completes.
+
+This is a staged commit, **not** a fully transactional installer. It does not guarantee recovery from power loss, arbitrary concurrent filesystem mutations, antivirus locks or process termination at every instruction.
+
+## Uninstall lifecycle
+
+1. Open the receipt from the selected installation root and validate its schema and managed paths.
+2. Preflight every tracked file and the managed uninstaller. If a tracked file differs from its receipt digest, stop before deleting any tracked file.
+3. Remove tracked payload files only. Do not recursively delete the installation root or unrelated files.
+4. Remove empty managed directories from deepest to shallowest, then remove the receipt.
+5. On Windows, if the uninstaller is the running executable, defer deleting it until after process exit using the experimental PowerShell cleanup helper.
+
+**Important:** The receipt is local metadata, not a cryptographically authenticated publisher statement. The prototype's checks defend against common corruption and accidental removal; they do not make a hostile local administrator or filesystem race safe.
+
+## Failure behavior and manual recovery
+
+| Situation | Current behavior | What the user should do |
+| --- | --- | --- |
+| Corrupted or truncated setup payload | Extraction or verification fails before committing the staged install | Keep the original setup for investigation; retry with a trusted build |
+| Existing nonempty destination | Installation refuses to overwrite its contents | Choose a new or empty folder |
+| Modified tracked file | Uninstall refuses removal during preflight | Back up user data and inspect changes before retrying |
+| Untracked user files in the installation folder | Files remain; the folder is retained | Remove remaining personal files manually only if desired |
+| Running Windows `Uninstall.exe` | Post-exit cleanup attempts to remove the helper and empty folder | If cleanup is blocked, close the process and inspect the remaining folder |
+| Windows WebView2 unavailable | The opt-in GUI cannot launch | Use console mode; no offline WebView2 redistributable is bundled |
+
+Do not manually delete the receipt to force an uninstall. Doing so removes BSIS's tracked-file inventory and integrity preflight.
+
+## Windows Apps & Features: next milestone
+
+BSIS does **not** currently create an Add/Remove Programs entry. The planned implementation should:
+
+- Register a **per-user** uninstall entry under `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall` without requiring elevation.
+- Use a stable product-specific key and a quoted absolute uninstall command targeting the installed `Uninstall.exe`.
+- Populate display name, publisher, version and installation location from validated package metadata.
+- Write the registry entry **after** a successful file commit; handle registration failure explicitly without pretending the installation is fully registered.
+- Remove only the matching product entry after a successful uninstall, never another application's key.
+- Add Windows integration tests for install, registry registration, uninstall, failure cleanup and paths containing spaces.
+- Treat per-machine registration under `HKLM` and UAC elevation as separate future capabilities.
+
+These are **acceptance criteria**, not working features or configuration options.
+
+## Custom offline UI: next milestone
+
+The current GUI uses a fixed bundled HTML/CSS wizard. A future developer-defined UI should package its assets offline, expose a narrowly scoped message protocol, validate all input in Rust, and share the same installation plan and progress events as console mode. Loading arbitrary remote pages or granting the UI unrestricted filesystem access is not part of the proposed design.
+
+## Release verification checklist
+
+Before describing a milestone as supported, verify all applicable items:
+
+- Rust workspace tests and Clippy on Linux and Windows.
+- Windows packaged setup smoke tests for fresh and empty destinations.
+- Windows installed-uninstaller smoke tests, including user-file preservation and spaces in paths.
+- Real desktop tests of WebView2 GUI navigation, failure reporting and final-window behavior.
+- For registry work: a clean per-user Windows VM test of Apps & Features visibility and uninstall.
+- Public documentation updated only after the corresponding implementation and CI are confirmed.
+
+See [Packaging](./packaging/), [Uninstaller](./uninstall/), [Security model](./security/) and [Roadmap](./roadmap/) for related details.
