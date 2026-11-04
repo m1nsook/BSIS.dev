@@ -33,7 +33,7 @@ For installations created with the updated BSIS runtime, the standalone uninstal
 & "$env:LOCALAPPDATA\BSIS-Hello-Test\Uninstall.exe" gui
 ~~~
 
-Or open PowerShell in the installation folder and run ` .\Uninstall.exe gui ` (without the surrounding spaces). **Double-clicking Uninstall.exe still uses console confirmation** for compatibility.
+Or open PowerShell in the installation folder and run `.\Uninstall.exe gui`. **Double-clicking Uninstall.exe still uses console confirmation** for compatibility.
 
 The window shows the installed product, version, publisher, destination and tracked-file count. BSIS checks the installation receipt and file hashes before displaying the preview, and **rechecks everything immediately before removal**. If files are missing or modified, it shows a warning or a refusal message rather than silently deleting them. A missing or invalid receipt prevents the preview from launching at all.
 
