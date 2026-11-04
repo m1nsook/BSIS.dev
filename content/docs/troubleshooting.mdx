@@ -1,0 +1,55 @@
+---
+title: Troubleshooting
+description: Common build, install and uninstall failures in the experimental Rust prototype.
+---
+
+This guide covers the current **console-only** Windows prototype, not the future graphical installer.
+
+## Installer closes after asking a question
+
+Double-clicking a console executable may open a terminal window that disappears when the process ends. Open PowerShell and run the executable from there to read its output:
+
+~~~powershell
+.\BSIS-Hello-Setup.exe
+~~~
+
+The bundled executable without arguments currently asks for an installation destination and confirmation. Type `y` or `yes` to proceed. To avoid the confirmation for testing, use `install --yes` with a fresh target.
+
+## The destination already exists
+
+BSIS deliberately refuses to install into an existing folder, even if it is empty. Select a path that does not already exist. **Do not delete an existing application's directory just to make the prototype work.**
+
+~~~powershell
+.\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test-2" --yes
+~~~
+
+## Parent folder does not exist
+
+For an explicit `--target`, its parent directory must already exist. Create an appropriate parent yourself, or omit `--target` to use the supported per-user default.
+
+## “Installer has no valid embedded package”
+
+The raw `bsis.exe` builder has no embedded application payload. First create `Setup.exe` using the `build` command, then run `install` on the **generated** executable. If an already-packaged setup is corrupted, inspection will fail as well.
+
+## Build reports an invalid path or JSON key
+
+The version 1 manifest accepts only `schema_version`, `product` and `files` with their documented child fields. Future configuration ideas such as `ui`, `shortcuts`, `registry` and `update` are not supported in the current prototype.
+
+Source mappings must use relative paths, and installation destinations must pass Windows path validation. See [Configuration](./configuration/).
+
+## Uninstall refuses to delete a modified file
+
+BSIS compares the current installed files with the hashes stored in `.bsis-receipt.json`. If a tracked file differs, uninstall stops **before deleting any tracked file**. This protects against accidental data loss. Preserve the modified file and review the installation; do not manually forge a receipt to force deletion.
+
+## Unsupported features
+
+| Need | Current answer |
+| --- | --- |
+| Custom GUI or WebView2 screens | Planned; console prototype only |
+| LZMA2 or LZ4 compression | Planned; Zstandard is currently fixed |
+| Update or repair an installed app | Not supported |
+| Windows shortcuts, services, registry or UAC | Not supported |
+| Public npm package or installer builder download | Not published |
+| Stable plugin API | Not available |
+
+For a known limitation rather than a runtime error, see [Roadmap](./roadmap/) and [Security model](./security/).

@@ -1,0 +1,81 @@
+---
+title: CLI reference
+description: The implemented build, inspect, install and uninstall commands in BSIS v0.1.0.
+---
+
+> **Experimental.** These commands are implemented in the current private Rust prototype. They are not a stable public API or published binary.
+
+BSIS uses one Rust executable as both a developer build tool (before packaging) and the console runtime of a packaged setup executable.
+
+## Command summary
+
+| Command | Purpose | Where to run |
+| --- | --- | --- |
+| `build` | Embed files into a standalone Windows executable | Unbundled builder |
+| `inspect` | Validate and list the packaged files | Builder or packaged setup |
+| `install` | Install to a new destination | Packaged setup |
+| `uninstall` | Remove only verified, tracked installed files | Packaged setup |
+
+## Build
+
+~~~powershell
+cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
+~~~
+
+| Flag | Required | Meaning |
+| --- | --- | --- |
+| `--config <path>` | Yes | JSON build configuration (schema version 1) |
+| `--runtime <path>` | Yes | Unbundled Windows PE executable to package |
+| `--output <path>` | Yes | Path for the generated setup executable |
+
+See [Configuration](./configuration/) for the supported JSON fields. The builder appends the Zstandard-compressed payload to the provided runtime; it does not generate a GUI.
+
+## Inspect
+
+~~~powershell
+.\BSIS-Hello-Setup.exe inspect
+~~~
+
+Inspect validates the embedded bundle and prints product information, the file count, compressed size and file paths. When run on an unbundled builder, you can inspect a different setup executable:
+
+~~~powershell
+.\target\release\bsis.exe inspect --bundle .\BSIS-Hello-Setup.exe
+~~~
+
+| Flag | Required | Meaning |
+| --- | --- | --- |
+| `--bundle <path>` | No | Read the specified bundle instead of the current executable |
+
+## Install
+
+~~~powershell
+.\BSIS-Hello-Setup.exe install --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+| Flag | Required | Meaning |
+| --- | --- | --- |
+| `--target <path>` | No | Installation destination; must not already exist |
+| `--yes` | No | Skip the install confirmation prompt |
+
+With no target, BSIS proposes a per-user destination under `%LOCALAPPDATA%\Programs\<product.id>`. Running the packaged executable **without arguments** starts an interactive console prompt to choose the destination and confirm.
+
+The `--yes` option skips confirmation. It does **not** mean that updates, unattended GUI workflows or privileged installation are implemented.
+
+## Uninstall
+
+~~~powershell
+.\BSIS-Hello-Setup.exe uninstall --target "$env:LOCALAPPDATA\BSIS-Hello-Test" --yes
+~~~
+
+| Flag | Required | Meaning |
+| --- | --- | --- |
+| `--target <path>` | Yes | Absolute path of an installation with a BSIS receipt |
+| `--yes` | No | Skip the uninstall confirmation prompt |
+
+BSIS checks the receipt and hashes of tracked files before deleting anything. A modified tracked file blocks uninstall; unrelated files are retained. This is not yet integrated into Windows Apps & Features.
+
+## Exit and error behavior
+
+Successful commands exit normally. Runtime errors print a `BSIS error:` message to standard error and exit with status 1. Command-line argument validation is handled by Clap.
+
+If your scenario fails, consult [Troubleshooting](./troubleshooting/). Do not use this prototype for production deployments.

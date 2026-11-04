@@ -1,11 +1,20 @@
 ---
 title: Configuration
-description: Current experimental JSON schema and future TypeScript authoring proposal.
+description: The implemented version 1 JSON build manifest, validation rules and future ideas.
 ---
 
-## Implemented version 1 JSON format
+> **Implemented but experimental.** This is the JSON schema consumed by the current Rust builder. It can change before the first public release. TypeScript examples later on this page are **concepts only**.
 
-The first Rust builder accepts a strict JSON file:
+## Minimal working configuration
+
+Create `bsis.json` beside a folder named `payload`:
+
+~~~text
+hello/
+├── bsis.json
+└── payload/
+    └── hello.txt
+~~~
 
 ~~~json
 {
@@ -22,26 +31,47 @@ The first Rust builder accepts a strict JSON file:
 }
 ~~~
 
-| Field | Purpose |
-| --- | --- |
-| **schema_version** | Required integer, currently 1 |
-| **product.id** | ASCII product identifier |
-| **product.name** | Display name |
-| **product.version** | Version label |
-| **product.publisher** | Publisher label |
-| **files[].from** | A source file or directory relative to this JSON file |
-| **files[].to** | A destination relative to the installation root |
+This example includes the contents of `payload` under the installation destination's `app` folder. A single source file can also be mapped to a relative target file.
 
-Directory mappings recursively include regular files. Destinations use forward slashes and are checked against traversal, duplicate names and invalid Windows path components.
+## Field reference
 
-The schema is **not stable**. The builder deliberately rejects unknown keys rather than silently ignoring unsupported installation features.
+| Field | Type | Rules |
+| --- | --- | --- |
+| `schema_version` | integer | Must equal `1` |
+| `product.id` | string | 1–100 ASCII letters/digits/dots/hyphens/underscores |
+| `product.name` | string | Non-empty display name, up to 128 bytes |
+| `product.version` | string | Non-empty version label, up to 64 bytes |
+| `product.publisher` | string | Publisher label, up to 128 bytes |
+| `files` | array | Between 1 and 50,000 source mappings |
+| `files[].from` | string | Relative file or directory path, resolved from the configuration file's directory |
+| `files[].to` | string | Relative destination inside the installation root |
 
-## Proposed TypeScript configuration
+Unknown keys are rejected. That makes unsupported features fail explicitly rather than being silently ignored.
 
-A future developer API could compile TypeScript into a validated native manifest, but it is **not implemented**:
+## Source and destination rules
+
+Mappings use relative paths, not `C:\\...` paths or a way to write outside the installation target. Directory mappings recursively include regular files. Build-time source symlinks and reparse points are not supported.
+
+BSIS validates destination path components against traversal, conflicting files and directories, case-insensitive duplicate Windows paths and invalid Windows names.
+
+The build manifest and the **embedded package manifest** are different objects: the embedded manifest contains the enumerated files, lengths and SHA-256 hashes after packaging.
+
+## Packaging with this file
+
+From the core repository, run:
+
+~~~powershell
+cargo run -p bsis -- build --config examples/hello/bsis.json --runtime target/release/bsis.exe --output BSIS-Hello-Setup.exe
+~~~
+
+See [CLI reference](./cli/) for full flags and [Packaging](./packaging/) for the output format.
+
+## Proposed TypeScript authoring API
+
+The following is a **design sketch**, not an importable package or supported BSIS configuration:
 
 ~~~typescript
-// Concept only: this package cannot be imported yet.
+// Concept only — @bsis/core is not published.
 import { defineConfig } from "@bsis/core";
 
 export default defineConfig({
@@ -51,4 +81,4 @@ export default defineConfig({
 });
 ~~~
 
-Features from the original vision, such as custom wizard steps, appearance settings, shortcuts, elevation and update preservation, are **not supported keys** in the current Rust JSON schema.
+Custom wizard screens, localization, appearance settings, shortcuts, elevation, updates and plugins are **not** recognized keys in the current JSON format. Refer to [Roadmap](./roadmap/) for the planned developer API.

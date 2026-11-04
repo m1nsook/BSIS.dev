@@ -1,42 +1,16 @@
 [
-  {
-    "slug": "index",
-    "title": "Overview"
-  },
-  {
-    "slug": "getting-started",
-    "title": "Getting started"
-  },
-  {
-    "slug": "prototype",
-    "title": "Rust prototype"
-  },
-  {
-    "slug": "vision",
-    "title": "Vision"
-  },
-  {
-    "slug": "architecture",
-    "title": "Architecture"
-  },
-  {
-    "slug": "configuration",
-    "title": "Configuration"
-  },
-  {
-    "slug": "installer-ui",
-    "title": "Installer UI"
-  },
-  {
-    "slug": "packaging",
-    "title": "Packaging"
-  },
-  {
-    "slug": "plugins",
-    "title": "Plugins"
-  },
-  {
-    "slug": "roadmap",
-    "title": "Roadmap"
-  }
+  { "slug": "index", "title": "Overview" },
+  { "slug": "getting-started", "title": "Getting started" },
+  { "slug": "prototype", "title": "Rust prototype" },
+  { "slug": "configuration", "title": "Configuration" },
+  { "slug": "packaging", "title": "Packaging" },
+  { "slug": "installer-ui", "title": "Installer UI" },
+  { "slug": "plugins", "title": "Plugins" },
+  { "slug": "cli", "title": "CLI reference" },
+  { "slug": "security", "title": "Security model" },
+  { "slug": "troubleshooting", "title": "Troubleshooting" },
+  { "slug": "architecture", "title": "Architecture" },
+  { "slug": "vision", "title": "Vision" },
+  { "slug": "roadmap", "title": "Roadmap" },
+  { "slug": "faq", "title": "FAQ" }
 ]

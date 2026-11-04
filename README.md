@@ -1,48 +1,55 @@
 # BSIS.dev
 
-Public documentation for **BSIS (Better NSIS)**, an early-stage Windows installer framework project.
+Public documentation for **BSIS (Better NSIS)**, an early-stage Windows installer framework.
 
-This repository contains the **documentation website only**. The BSIS engine is private while development is in progress. Documentation examples describe design ideas unless explicitly marked as implemented.
+This repository is the **documentation website only**. The Rust installer engine is private during development. Every page should distinguish experimentally implemented functionality from proposals and should never present future features as working.
 
 ## Stack
 
 - Next.js 16 (App Router), React 19 and TypeScript
-- AriaDocs (MDX and OpenAPI reference scaffold)
+- AriaDocs components and MDX content
 - Tailwind CSS 4 and shadcn/ui
 - Bun
 - Static export to GitHub Pages
 
-## Local development
+The documentation has grouped navigation, a content search index generated from MDX at build time (`Ctrl+K`), adjacent-page navigation and a command-line reference. The previous fake OpenAPI endpoint has been retired; BSIS has no HTTP service API.
 
-```powershell
+## Run locally
+
+~~~powershell
 bun install --frozen-lockfile
 bun run dev
-```
+~~~
 
-Visit the address printed in the terminal.
+## Verify a production build
 
-## Verify the production build
-
-```powershell
+~~~powershell
 bun run lint
 bunx tsc --noEmit
 bun run build
-```
+~~~
 
-The static site is emitted into `out/`. Local builds have no base path.
+The static site is emitted to `out/`. Local builds have no base path.
 
-GitHub Pages builds set `NEXT_PUBLIC_BASE_PATH=/BSIS.dev`, since the repository is deployed as a project site at `https://m1nsook.github.io/BSIS.dev/`. Next.js uses this path for its router and static assets.
+GitHub Pages builds use `NEXT_PUBLIC_BASE_PATH=/BSIS.dev`. Next.js applies this to routing and assets for `https://m1nsook.github.io/BSIS.dev/`.
 
 ## Publishing
 
-The `.github/workflows/pages.yml` workflow validates pull requests and deploys successful `main` builds using GitHub Actions. In repository **Settings → Pages**, set the source to **GitHub Actions**. Do not use a `gh-pages` branch.
+The GitHub Actions workflow validates pull requests and publishes successful `main` builds. In **Settings → Pages**, set the source to **GitHub Actions**. Don't select deployment from a branch.
 
-If a custom domain is introduced, adjust the workflow base path and the GitHub Pages custom-domain settings together.
+If a custom domain is introduced, update the base path and domain settings together.
 
-## Editing guides
+## Documentation authorship
 
-Add or modify MDX pages under `content/docs/` and update `content/docs/_meta.json` to set sidebar order. Relative internal links work with both local development and GitHub Pages project paths.
+- Pages are MDX files under `content/docs/`.
+- `content/docs/_meta.json` controls displayed titles and source page ordering.
+- `src/lib/docs-navigation.ts` defines the grouped sidebar (update it when adding a page).
+- Search content is derived from `docs.getPagePaths()` and the MDX source automatically; there is no separate search index to maintain.
+- Keep relative cross-links local to `/docs`; prefer `./page/` in MDX pages.
+- Mark unimplemented capabilities as **Proposed** or **Concept only**.
 
-The `openapi.yaml` file and `/reference` section are currently **examples only**, not a public BSIS service API.
+The `/reference` route describes real prototype commands and manifest behavior rather than an imaginary HTTP API.
 
-Please keep planned features explicitly marked as proposals until supported by a tested release.
+## Source of truth
+
+Keep docs in sync with the private BSIS core repository. The implemented Rust CLI and manifest schema take precedence over older aspirational examples.
